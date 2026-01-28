@@ -1,14 +1,14 @@
 ---
-name: Bug Report
-about: Create a bug report to help us resolving the bug to help us test...
+name: Use case
+about: A FAIR use case is a concrete, description of who needs what kind of data, for what purpose, and under what conditions, such that the data must be Findable, Accessible, Interoperable, and Reusable to successfully achieve that goal.
 title: '🪲[BUG] Write a suitable title'
-labels: 'bug'
+labels: 'Test'
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Use case description**
+Please follow the syntax: as a ____, I want to_____, so that I can_______ . 
 
 **To Reproduce**
 Steps to reproduce the behavior:
