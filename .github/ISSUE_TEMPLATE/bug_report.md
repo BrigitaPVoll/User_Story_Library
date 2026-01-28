@@ -1,5 +1,5 @@
 ---
-name: Use Case
+name: User Story
 about: A FAIR use case is a concrete, description of who needs what kind of data, for what purpose, and under what conditions.
 title: 'Write a suitable title'
 labels: ''
@@ -7,34 +7,21 @@ assignees: ''
 
 ---
 
-**Use case description**
+**Definition af user story**
+A FAIR use case is a concrete, description of who needs what kind of data, for what purpose, and under what conditions, such that the data must be Findable, Accessible, Interoperable, and Reusable to successfully achieve that goal.
+
+A guiding question in understanding what a FAIR use case is: 
+“Could someone other than the original data creator realistically find, understand, and reuse this data in the future?”
+What allowed that to happen? 
+
+
+**User story description, please follow the syntax below**
 As a _____, I want to______, so that I can________.
 
-**Domain/Field**
-Specifiy domain area.
-e.g., 
--	Humanities
--	Social Sciences 
--	Natural Sciences 
--	Engineering and Technology 
--	Medical and Health Sciences 
--	Agricultural Sciences 
--	Domain agnostic 
 
-
-**Provenance**
-If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
 
 **Additional context**
-Add any other context about the problem here.
+Add any other context about the user story here.
+
+**Can we contact you to participate in a future EOSC funded project on FAIR data management?**
+Yes or No
