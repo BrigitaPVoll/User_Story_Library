@@ -1,4 +1,3 @@
-
 ---
 name: User Story
 about: A FAIR use case describing who needs what data, for what purpose, and under what conditions.
