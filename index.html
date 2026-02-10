@@ -1,5 +1,5 @@
 
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -159,13 +159,46 @@
     /* ==== Print-friendly styling (for "Save as PDF") ==== */
     @page { size: A4; margin: 16mm; }
     @media print {
-      header, .controls, .status, .load-more, footer, .modal-backdrop { display: none !important; }
+      header, .controls, .status, .load-more, footer, .modal-backdrop, #detail-drawer { display: none !important; }
       body { background: #fff; }
       main { padding: 0 }
       .grid { grid-template-columns: 1fr; gap: .8rem; }
       .card { box-shadow: none; border-color: #ddd; }
       a[href]::after { content: " (" attr(href) ")"; font-size: .8em; color: #888; }
     }
+
+    /* === NEW: Detail Drawer (issue viewer) === */
+    #detail-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: min(760px, 96vw);
+      background: var(--control-bg);
+      color: var(--fg);
+      border-left: 1px solid var(--control-border);
+      box-shadow: -12px 0 30px rgba(0,0,0,.18);
+      transform: translateX(110%);
+      transition: transform .28s ease;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+    }
+    #detail-drawer.open { transform: translateX(0); }
+    #detail-header {
+      display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+      padding: .9rem 1rem; border-bottom: 1px solid var(--control-border);
+      background: color-mix(in oklab, var(--control-bg) 90%, transparent);
+    }
+    #detail-title { font-size: 1.05rem; font-weight: 700; color: var(--deic-blue); margin: 0; }
+    #detail-body { padding: 1rem; overflow: auto; }
+    #detail-body .section { margin-bottom: 1rem; }
+    .btn-ghost { background: transparent; border:1px solid var(--control-border); padding:.5rem .7rem; border-radius:.6rem; cursor:pointer; color: var(--fg); }
+    .btn-ghost:hover{ background: color-mix(in oklab, var(--accent) 10%, white); }
+    .story-badge { border:1px dashed var(--border); border-radius: 8px; padding:.25rem .5rem; font-size:.85rem; color: var(--muted); }
+    .markdown h1,.markdown h2,.markdown h3{margin: .8rem 0 .4rem; color: var(--deic-blue)}
+    .markdown code{background: color-mix(in oklab, #888 12%, white); padding:.05rem .35rem; border-radius:.3rem}
+    .markdown pre code{display:block; padding:.6rem .8rem; overflow:auto}
   </style>
 </head>
 <body>
@@ -318,6 +351,24 @@
     </div>
   </div>
 
+  <!-- === NEW: Right-side detail drawer === -->
+  <aside id="detail-drawer" aria-hidden="true" aria-label="User story detail">
+    <div id="detail-header">
+      <h3 id="detail-title">Loading…</h3>
+      <div style="display:flex; gap:.5rem; align-items:center">
+        <button id="toggle-comments" class="btn-ghost" title="Load comments">Comments</button>
+        <a id="detail-gh" class="btn-ghost" target="_blank" rel="noopener">Open in GitHub</a>
+        <button id="detail-close" class="btn-ghost" aria-label="Close">Close</button>
+      </div>
+    </div>
+    <div id="detail-body">
+      <div class="section" id="detail-meta"></div>
+      <div class="section" id="detail-story"></div>
+      <div class="section markdown" id="detail-markdown"></div>
+      <div class="section" id="detail-comments" style="display:none;"></div>
+    </div>
+  </aside>
+
   <script>
     // ---------- Configuration ----------
     const OWNER = 'BrigitaPVoll';
@@ -345,6 +396,18 @@
     const cancelModalBtn = $('#cancel-modal');
     const storyForm = $('#story-form');
     const rateEl = $('#rate');
+
+    // NEW: Detail drawer elements
+    const drawer = $('#detail-drawer');
+    const detailTitle = $('#detail-title');
+    const detailMeta = $('#detail-meta');
+    const detailStory = $('#detail-story');
+    theDetailMarkdown = $('#detail-markdown'); // intentionally without 'const' to avoid redeclaration in some bundlers
+    const detailMarkdown = theDetailMarkdown;
+    const detailComments = $('#detail-comments');
+    const detailCloseBtn = $('#detail-close');
+    const ghLink = $('#detail-gh');
+    const toggleCommentsBtn = $('#toggle-comments');
 
     // ---------- Utilities ----------
     function escapeHTML(str){
@@ -408,6 +471,46 @@
       return { storyLine, role, goal, benefit, context, consent };
     }
 
+    // === NEW: Minimal Markdown -> HTML (safe-ish) ===
+    function markdownToHTML(md){
+      if (!md) return '';
+      let s = md;
+
+      // Escape first, then re-introduce markdown constructs
+      s = escapeHTML(s);
+
+      // Headings
+      s = s.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+           .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+           .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+           .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+           .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+           .replace(/^# (.*)$/gm, '<h1>$1</h1>');
+
+      // Code blocks ``` ```
+      s = s.replace(/```([\s\S]*?)```/g, (m, code) => `<pre><code>${code}</code></pre>`);
+
+      // Inline code
+      s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Bold/italic
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+           .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+      // Links [text](url)
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+      // Lists (simple)
+      s = s.replace(/(^|\n)\s*-\s+(.*)(?=\n|$)/g, '$1<li>$2</li>');
+      s = s.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g, '');
+
+      // Paragraphs (simple)
+      s = s.replace(/(\n\s*\n)/g, '</p><p>');
+      s = `<p>${s}</p>`.replace(/<p>\s*<\/p>/g,'');
+
+      return s;
+    }
+
     // ---------- GitHub API ----------
     function buildIssuesURL({state, page}){
       const base = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues`;
@@ -449,7 +552,390 @@
       }catch(err){ showError(err.message); }
     }
 
-    // ---------- Create issue (New Story) ----------
+    // === NEW: Fetch a single issue by number ===
+    async function fetchIssue(number){
+      const url = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues/${number}`;
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(url, { headers });
+      updateRateFromHeaders(res.headers);
+      if (!res.ok){
+        const text = await res.text();
+        throw new Error(`${res.status} ${res.statusText} — ${text}`);
+      }
+      return res.json();
+    }
+
+    // === NEW: Fetch comments for an issue (first page) ===
+    async function fetchComments(number){
+      const url = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues/${number}/comments?per_page=50`;
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(url, { headers });
+      updateRateFromHeaders(res.headers);
+      if (!res.ok){
+        const text = await res.text();
+        throw new Error(`${res.status} ${res.statusText} — ${text}`);
+      }
+      return res.json();
+    }
+
+    // ---------- Rendering ----------
+    function renderIssues(items){
+      const q = ($('#search').value || '').toLowerCase().trim();
+      const onlyTemplate = $('#only-template').checked;
+
+      const filtered = items.filter(i => {
+        const parsed = parseStory(i.body);
+        const hasStory = parsed.storyLine && /As a\b/i.test(parsed.storyLine);
+        if (onlyTemplate && !hasStory) return false;
+
+        if (!q) return true;
+        const hay = [
+          i.title || '',
+          i.number,
+          parsed.storyLine || '',
+          parsed.context || '',
+          (i.labels||[]).map(l=>l.name).join(' ')
+        ].join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+
+      storiesEl.innerHTML = '';
+      emptyEl.style.display = filtered.length ? 'none' : 'block';
+
+      for (const i of filtered){
+        const parsed = parseStory(i.body);
+        const labels = (i.labels||[]).map(l=>l.name).sort();
+        const assignees = (i.assignees||[]);
+        const updated = i.updated_at ? fmtDate(i.updated_at) : '';
+        const title = (i.title && i.title.trim()) || parsed.storyLine || `(issue #${i.number})`;
+
+        const storyParts = (parsed.role || parsed.goal || parsed.benefit)
+          ? `<div class="story-parts">
+               ${parsed.role ? `<span class="story-part">Role: ${escapeHTML(parsed.role)}</span>`:''}
+               ${parsed.goal ? `<span class="story-part">Goal: ${escapeHTML(parsed.goal)}</span>`:''}
+               ${parsed.benefit ? `<span class="story-part">Benefit: ${escapeHTML(parsed.benefit)}</span>`:''}
+             </div>` : '';
+
+        const consentPill = parsed.consent === 'Yes' ? 'ok' : (parsed.consent === 'No' ? 'no' : 'na');
+
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>
+            <!-- CHANGED: make title a button that opens the viewer -->
+            <button class="btn-ghost open-issue" data-number="${i.number}" title="Open in page">${escapeHTML(title)}</button>
+          </h3>
+          <div class="meta">
+            <span>#${i.number}</span><span>•</span>
+            <span>${escapeHTML(i.state)}</span>
+            ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>` : ''}
+          </div>
+
+          ${parsed.storyLine ? `<div class="desc">${escapeHTML(parsed.storyLine)}</div>`:''}
+          ${storyParts}
+
+          ${parsed.context ? `
+            <div>
+              <div class="meta" style="margin-top:.25rem;"><strong>Additional context</strong></div>
+              <div class="desc" style="white-space:pre-wrap;">${escapeHTML(parsed.context)}</div>
+            </div>` : ''}
+
+          <div class="meta" style="margin-top:.35rem;">
+            <span class="pill ${consentPill}">Contact consent: ${escapeHTML(parsed.consent)}</span>
+          </div>
+
+          <div class="meta">
+            <div class="labels">
+              ${labels.map(name => `<span class="label">${escapeHTML(name)}</span>`).join('')}
+            </div>
+          </div>
+
+          ${assignees.length ? `
+            <div class="meta assignees">
+              <span>Assignees:</span>
+              ${assignees.map(a=>`<img src="${escapeHTML(a.avatar_url)}" alt="${escapeHTML(a.login)}" />`).join('')}
+            </div>` : ''}
+
+          <div class="meta">
+            <!-- Keep GitHub as secondary action -->
+            <a href="${escapeHTML(i.html_url)}" target="_blank" rel="noopener">Open in GitHub</a>
+          </div>
+        `;
+        storiesEl.appendChild(card);
+      }
+
+      // Wire up click handlers for the new buttons
+      storiesEl.querySelectorAll('.open-issue').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const n = parseInt(btn.getAttribute('data-number'), 10);
+          openIssue(n, { push: true });
+        });
+      });
+    }
+
+    // ---------- CSV export ----------
+    function toCSV(items){
+      const header = ["number","title","state","updated_iso","labels","role","goal","benefit","consent","context","url"];
+      const rows = items.map(i => {
+        const p = parseStory(i.body);
+        const labels = (i.labels||[]).map(l=>l.name).join('|');
+        const clean = s => (s||'').replace(/\r?\n/g,' ').trim();
+        return [
+          i.number,
+          clean(i.title || p.storyLine || ''),
+          i.state || '',
+          i.updated_at || '',
+          labels,
+          clean(p.role),
+          clean(p.goal),
+          clean(p.benefit),
+          p.consent || 'N/A',
+          clean(p.context),
+          i.html_url || ''
+        ];
+      });
+      const escapeCell = v => {
+        const s = String(v ?? '');
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+      };
+      const csv = [header.join(','), ...rows.map(r => r.map(escapeCell).join(','))].join('\n');
+      return csv;
+    }
+    function downloadCSV(){
+      const csv = toCSV(accumulated);
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `user-stories_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+
+    // === NEW: Open/close viewer and render content ===
+    async function openIssue(number, {push=false} = {}){
+      try{
+        setStatus(`Opening #${number}…`);
+        drawer.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+        detailTitle.textContent = `#${number} Loading…`;
+        detailMeta.innerHTML = '';
+        detailStory.innerHTML = '';
+        detailMarkdown.innerHTML = '';
+        detailComments.style.display = 'none';
+        detailComments.innerHTML = '';
+
+        if (push){
+          const url = new URL(location.href);
+          url.searchParams.set('issue', String(number));
+          history.pushState({issue:number}, '', url);
+        }
+
+        const issue = await fetchIssue(number);
+
+        // Title & GH link
+        detailTitle.textContent = issue.title || `Issue #${issue.number}`;
+        ghLink.href = issue.html_url || '#';
+
+        // Meta
+        const updated = issue.updated_at ? fmtDate(issue.updated_at) : '';
+        const labels = (issue.labels||[]).map(l=>l.name).sort();
+        const lblHTML = labels.map(n => `<span class="label">${escapeHTML(n)}</span>`).join(' ');
+        detailMeta.innerHTML = `
+          <div class="meta" style="margin-bottom:.5rem;">
+            <span>#${issue.number}</span><span>•</span>
+            <span>${escapeHTML(issue.state || '')}</span>
+            ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>`:''}
+          </div>
+          ${lblHTML ? `<div class="labels">${lblHTML}</div>`:''}
+        `;
+
+        // Extract story parts
+        const parsed = parseStory(issue.body || '');
+        const consentPill = parsed.consent === 'Yes' ? 'ok' : (parsed.consent === 'No' ? 'no' : 'na');
+        detailStory.innerHTML = `
+          ${parsed.storyLine ? `<div class="desc" style="margin:.25rem 0  .4rem;">${escapeHTML(parsed.storyLine)}</div>`:''}
+          <div class="story-parts" style="margin-bottom:.35rem;">
+            ${parsed.role ? `<span class="story-badge">Role: ${escapeHTML(parsed.role)}</span>`:''}
+            ${parsed.goal ? `<span class="story-badge">Goal: ${escapeHTML(parsed.goal)}</span>`:''}
+            ${parsed.benefit ? `<span class="story-badge">Benefit: ${escapeHTML(parsed.benefit)}</span>`:''}
+            <span class="pill ${consentPill}">Consent: ${escapeHTML(parsed.consent || 'N/A')}</span>
+          </div>
+          ${
+            parsed.context
+            ? `<div><div class="meta"><strong>Additional context</strong></div>
+                <div class="desc" style="white-space:pre-wrap;">${escapeHTML(parsed.context)}</div></div>`
+            : ''
+          }
+        `;
+
+        // Full body (Markdown-rendered)
+        detailMarkdown.innerHTML = `
+          <h3>Full description</h3>
+          ${markdownToHTML(issue.body || '_No description provided._')}
+        `;
+
+        setStatus('');
+      }catch(err){
+        detailTitle.textContent = 'Failed to load';
+        detailMarkdown.innerHTML = `<div class="notice">Error: ${escapeHTML(err.message)}</div>`;
+        setStatus('');
+      }
+    }
+
+    function closeIssue({pop=false} = {}){
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      if (!pop){
+        const url = new URL(location.href);
+        url.searchParams.delete('issue');
+        history.pushState({}, '', url);
+      }
+    }
+
+    // Load comments lazily
+    toggleCommentsBtn.addEventListener('click', async ()=>{
+      const params = new URLSearchParams(location.search);
+      const n = parseInt(params.get('issue') || '0', 10);
+      if (!n) return;
+      if (detailComments.style.display === 'none'){
+        toggleCommentsBtn.textContent = 'Loading…';
+        try{
+          const comments = await fetchComments(n);
+          if (!comments.length){
+            detailComments.innerHTML = `<div class="notice">No comments.</div>`;
+          }else{
+            detailComments.innerHTML = `
+              <h3 style="margin-top:0">Comments</h3>
+              ${comments.map(c => `
+                <div style="border-top:1px solid var(--control-border); padding:.6rem 0;">
+                  <div class="meta" style="margin-bottom:.25rem;">
+                    <img src="${escapeHTML((c.user||{}).avatar_url||'')}" alt="" style="width:18px; height:18px; border-radius:50%; border:1px solid var(--border)" />
+                    <strong>${escapeHTML((c.user||{}).login||'')}</strong>
+                    <span>•</span><span>${escapeHTML(fmtDate(c.created_at))}</span>
+                  </div>
+                  <div class="markdown">${markdownToHTML(c.body || '')}</div>
+                </div>
+              `).join('')}
+            `;
+          }
+          detailComments.style.display = 'block';
+          toggleCommentsBtn.textContent = 'Hide comments';
+        }catch(e){
+          detailComments.innerHTML = `<div class="notice">Failed to load comments: ${escapeHTML(e.message)}</div>`;
+          detailComments.style.display = 'block';
+          toggleCommentsBtn.textContent = 'Hide comments';
+        }
+      }else{
+        detailComments.style.display = 'none';
+        toggleCommentsBtn.textContent = 'Comments';
+      }
+    });
+
+    // ---------- Events ----------
+    $('#refresh').addEventListener('click', () => {
+      currentPage = 1;
+      fetchIssues({append:false});
+    });
+    $('#state').addEventListener('change', () => {
+      currentPage = 1;
+      fetchIssues({append:false});
+    });
+    $('#search').addEventListener('input', () => renderIssues(accumulated));
+    $('#only-template').addEventListener('change', () => renderIssues(accumulated));
+
+    $('#toggle-token').addEventListener('click', () => {
+      const isOpen = tokenBox.style.display !== 'none';
+      tokenBox.style.display = isOpen ? 'none' : 'grid';
+      $('#toggle-token').setAttribute('aria-expanded', String(!isOpen));
+    });
+    $('#token').addEventListener('change', (e) => {
+      const v = e.target.value.trim();
+      if (v) localStorage.setItem('GITHUB_TOKEN', v);
+    });
+
+    $('#export').addEventListener('click', downloadCSV);
+    $('#print').addEventListener('click', () => window.print());
+    moreBtn.addEventListener('click', () => {
+      currentPage += 1;
+      fetchIssues({append:true});
+    });
+
+    // Modal open/close
+    openModalBtn.addEventListener('click', () => { backdrop.style.display = 'flex'; });
+    cancelModalBtn.addEventListener('click', () => { backdrop.style.display = 'none'; });
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.style.display = 'none'; });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape'){
+        if (drawer.classList.contains('open')) closeIssue();
+        else backdrop.style.display = 'none';
+      }
+    });
+
+    // Create story -> GitHub Issue
+    storyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = $('#title').value.trim();
+      const role = $('#role').value.trim();
+      const goal = $('#goal').value.trim();
+      const benefit = $('#benefit').value.trim();
+
+      if (!title) { alert('Title is required'); return; }
+      if (!role || !goal) { alert('Please provide at least the role and the goal.'); return; }
+
+      const payload = {
+        title,
+        role,
+        goal,
+        benefit,
+        context: $('#context').value.trim(),
+        consent: $('#consent').value,
+        labels: $('#labels').value.trim(),
+        assignees: $('#assignees').value.trim()
+      };
+
+      try {
+        setStatus('Creating issue… ');
+        const issue = await createIssue(payload);
+        setStatus('Issue created successfully.');
+        backdrop.style.display = 'none';
+
+        // Clear the form and re-render
+        storyForm.reset();
+        $('#labels').value = 'user-story';
+        accumulated = [issue, ...accumulated];
+        renderIssues(accumulated);
+
+        // Open the new issue directly in the drawer
+        openIssue(issue.number, { push: true });
+      } catch (err) {
+        alert('Failed to create issue: ' + err.message);
+        setStatus('');
+      }
+    });
+
+    // NEW: Drawer close button
+    detailCloseBtn.addEventListener('click', () => closeIssue());
+
+    // ---------- Routing ----------
+    window.addEventListener('popstate', () => {
+      const params = new URLSearchParams(location.search);
+      const issue = params.get('issue');
+      if (issue){
+        openIssue(parseInt(issue,10), { push:false });
+      }else{
+        // Close if no issue in URL
+        if (drawer.classList.contains('open')) closeIssue({pop:true});
+      }
+    });
+
+    // ---------- Build issue body for creation ----------
     function buildIssueBody({role, goal, benefit, context, consent}) {
       const line = (role || goal || benefit)
         ? `As a ${role || '_____'}, I want to ${goal || '______'}, so that I can ${benefit || '________'}.`
@@ -500,209 +986,17 @@
       return res.json();
     }
 
-    // ---------- Rendering ----------
-    function renderIssues(items){
-      const q = ($('#search').value || '').toLowerCase().trim();
-      const onlyTemplate = $('#only-template').checked;
-
-      const filtered = items.filter(i => {
-        const parsed = parseStory(i.body);
-        const hasStory = parsed.storyLine && /As a\b/i.test(parsed.storyLine);
-        if (onlyTemplate && !hasStory) return false;
-
-        if (!q) return true;
-        const hay = [
-          i.title || '',
-          i.number,
-          parsed.storyLine || '',
-          parsed.context || '',
-          (i.labels||[]).map(l=>l.name).join(' ')
-        ].join(' ').toLowerCase();
-        return hay.includes(q);
-      });
-
-      storiesEl.innerHTML = '';
-      emptyEl.style.display = filtered.length ? 'none' : 'block';
-
-      for (const i of filtered){
-        const parsed = parseStory(i.body);
-        const labels = (i.labels||[]).map(l=>l.name).sort();
-        const assignees = (i.assignees||[]);
-        const updated = i.updated_at ? fmtDate(i.updated_at) : '';
-        const title = (i.title && i.title.trim()) || parsed.storyLine || `(issue #${i.number})`;
-
-        const storyParts = (parsed.role || parsed.goal || parsed.benefit)
-          ? `<div class="story-parts">
-               ${parsed.role ? `<span class="story-part">Role: ${escapeHTML(parsed.role)}</span>`:''}
-               ${parsed.goal ? `<span class="story-part">Goal: ${escapeHTML(parsed.goal)}</span>`:''}
-               ${parsed.benefit ? `<span class="story-part">Benefit: ${escapeHTML(parsed.benefit)}</span>`:''}
-             </div>` : '';
-
-        const consentPill = parsed.consent === 'Yes' ? 'ok' : (parsed.consent === 'No' ? 'no' : 'na');
-
-        const card = document.createElement('article');
-        card.className = 'card';
-        card.innerHTML = `
-          <h3><a href="${escapeHTML(i.html_url)}" target="_blank" rel="noopener">${escapeHTML(title)}</a></h3>
-          <div class="meta">
-            <span>#${i.number}</span><span>•</span>
-            <span>${escapeHTML(i.state)}</span>
-            ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>` : ''}
-          </div>
-
-          ${parsed.storyLine ? `<div class="desc">${escapeHTML(parsed.storyLine)}</div>`:''}
-          ${storyParts}
-
-          ${parsed.context ? `
-            <div>
-              <div class="meta" style="margin-top:.25rem;"><strong>Additional context</strong></div>
-              <div class="desc" style="white-space:pre-wrap;">${escapeHTML(parsed.context)}</div>
-            </div>` : ''}
-
-          <div class="meta" style="margin-top:.35rem;">
-            <span class="pill ${consentPill}">Contact consent: ${escapeHTML(parsed.consent)}</span>
-          </div>
-
-          <div class="meta">
-            <div class="labels">
-              ${labels.map(name => `<span class="label">${escapeHTML(name)}</span>`).join('')}
-            </div>
-          </div>
-
-          ${assignees.length ? `
-            <div class="meta assignees">
-              <span>Assignees:</span>
-              ${assignees.map(a=>`<img src="${escapeHTML(a.avatar_url)}" alt="${escapeHTML(a.login)}" />`).join('')}
-            </div>` : ''}
-
-          <div class="meta">
-            <a href="${escapeHTML(i.html_url)}" target="_blank" rel="noopener">Open in GitHub</a>
-          </div>
-        `;
-        storiesEl.appendChild(card);
-      }
-    }
-
-    // ---------- CSV export ----------
-    function toCSV(items){
-      const header = ["number","title","state","updated_iso","labels","role","goal","benefit","consent","context","url"];
-      const rows = items.map(i => {
-        const p = parseStory(i.body);
-        const labels = (i.labels||[]).map(l=>l.name).join('|');
-        const clean = s => (s||'').replace(/\r?\n/g,' ').trim();
-        return [
-          i.number,
-          clean(i.title || p.storyLine || ''),
-          i.state || '',
-          i.updated_at || '',
-          labels,
-          clean(p.role),
-          clean(p.goal),
-          clean(p.benefit),
-          p.consent || 'N/A',
-          clean(p.context),
-          i.html_url || ''
-        ];
-      });
-      const escapeCell = v => {
-        const s = String(v ?? '');
-        return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
-      };
-      const csv = [header.join(','), ...rows.map(r => r.map(escapeCell).join(','))].join('\n');
-      return csv;
-    }
-    function downloadCSV(){
-      const csv = toCSV(accumulated);
-      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `user-stories_${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    }
-
-    // ---------- Events ----------
-    $('#refresh').addEventListener('click', () => {
-      currentPage = 1;
-      fetchIssues({append:false});
-    });
-    $('#state').addEventListener('change', () => {
-      currentPage = 1;
-      fetchIssues({append:false});
-    });
-    $('#search').addEventListener('input', () => renderIssues(accumulated));
-    $('#only-template').addEventListener('change', () => renderIssues(accumulated));
-
-    $('#toggle-token').addEventListener('click', () => {
-      const isOpen = tokenBox.style.display !== 'none';
-      tokenBox.style.display = isOpen ? 'none' : 'grid';
-      $('#toggle-token').setAttribute('aria-expanded', String(!isOpen));
-    });
-    $('#token').addEventListener('change', (e) => {
-      const v = e.target.value.trim();
-      if (v) localStorage.setItem('GITHUB_TOKEN', v);
-    });
-
-    $('#export').addEventListener('click', downloadCSV);
-    $('#print').addEventListener('click', () => window.print());
-    moreBtn.addEventListener('click', () => {
-      currentPage += 1;
-      fetchIssues({append:true});
-    });
-
-    // Modal open/close
-    openModalBtn.addEventListener('click', () => { backdrop.style.display = 'flex'; });
-    cancelModalBtn.addEventListener('click', () => { backdrop.style.display = 'none'; });
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.style.display = 'none'; });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') backdrop.style.display = 'none'; });
-
-    // Create story -> GitHub Issue
-    storyForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = $('#title').value.trim();
-      const role = $('#role').value.trim();
-      const goal = $('#goal').value.trim();
-      const benefit = $('#benefit').value.trim();
-
-      if (!title) { alert('Title is required'); return; }
-      if (!role || !goal) { alert('Please provide at least the role and the goal.'); return; }
-
-      const payload = {
-        title,
-        role,
-        goal,
-        benefit,
-        context: $('#context').value.trim(),
-        consent: $('#consent').value,
-        labels: $('#labels').value.trim(),
-        assignees: $('#assignees').value.trim()
-      };
-
-      try {
-        setStatus('Creating issue… ');
-        const issue = await createIssue(payload);
-        setStatus('Issue created successfully.');
-        backdrop.style.display = 'none';
-
-        // Clear the form and re-render
-        storyForm.reset();
-        $('#labels').value = 'user-story';
-        accumulated = [issue, ...accumulated];
-        renderIssues(accumulated);
-      } catch (err) {
-        alert('Failed to create issue: ' + err.message);
-        setStatus('');
-      }
-    });
-
     // ---------- Init ----------
     (function init(){
       const saved = localStorage.getItem('GITHUB_TOKEN');
       if (saved) tokenInput.value = '••••••••••••••••';
       currentPage = 1;
-      fetchIssues({append:false});
+      fetchIssues({append:false}).then(() => {
+        // If deep link present, open it
+        const params = new URLSearchParams(location.search);
+        const issue = params.get('issue');
+        if (issue) openIssue(parseInt(issue,10), { push:false });
+      });
     })();
   </script>
 </body>
