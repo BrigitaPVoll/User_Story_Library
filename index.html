@@ -1,207 +1,270 @@
 
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>User Story Library | DeiC style</title>
+  <title>User Story Library · Modern Green/Teal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="User Story Library powered by GitHub Issues. Modern green/teal theme, CSV/PDF export, in-page viewer, and tag selector." />
+
   <style>
-    /* ==== DeiC-inspired palette & layout variables ==== */
-    :root{
-      --deic-green: #BFD730;
-      --deic-sprout: #C9E1BD;
-      --deic-blue:  #16385D;
+    /* ===========================
+       THEME — Modern Green/Teal Minimal (Option A)
+       =========================== */
+    :root {
+      /* Core */
+      --green-dark: #5A7F2C;          /* deep olive green */
+      --green:      #8FBF5D;          /* modern fresh green */
+      --teal:       #1C8C84;          /* deep teal accent */
 
-      /* Page background: not white */
-      --bg: #f2f5f0;            /* soft warm green-grey */
-      --fg: #0b1221;
-      --muted: #667085;
+      /* Surfaces & text */
+      --bg:     #F7F9F7;              /* warm white background */
+      --fg:     #0E1A12;              /* dark greenish text */
+      --muted:  #6C7A70;              /* neutral muted */
 
-      --card: #f8faf7;
-      --border: #dfe6d8;
+      --card:   #FFFFFF;              /* white cards */
+      --border: #D7DFC8;              /* soft gray-green border */
 
-      --accent: var(--deic-green);
-      --accent-contrast: #0b1221;
+      /* Accents */
+      --accent: var(--teal);          /* primary accent (buttons, links) */
+      --accent-contrast: #FFFFFF;
 
-      /* Header & controls */
-      --header-bg: color-mix(in oklab, var(--deic-blue) 8%, var(--bg));
-      --header-border: color-mix(in oklab, var(--deic-green) 28%, white);
-      --accent-soft: color-mix(in oklab, var(--deic-green) 18%, white);
+      /* UI chrome */
+      --control-bg:     #FFFFFF;
+      --control-border: var(--border);
+      --control-shadow: 0 6px 22px rgba(0,0,0,.06);
+      --shadow:         0 10px 28px rgba(0,0,0,.10);
 
-      --control-bg: #ffffff;
-      --control-border: #cfd8c8;
-      --control-shadow: 0 4px 12px rgba(0,0,0,.07);
+      --link: var(--teal);
+      --focus: color-mix(in oklab, var(--teal) 60%, white);
 
-      --link: var(--deic-blue);
-      --shadow: 0 6px 18px rgba(0,0,0,.08);
+      /* Header */
+      --header-bg: color-mix(in oklab, var(--green-dark) 8%, white);
+      --header-border: var(--green);
     }
 
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg: #0e1523;
-        --fg: #eef2f7;
-        --muted: #aeb9c7;
-        --card: #121a28;
-        --border: #243045;
-        --accent-contrast: #0e1523;
-        --header-bg: #0f1b2b;
-        --header-border: #33527a;
-        --control-bg: #0f1726;
-        --control-border: #243045;
-        --control-shadow: 0 6px 16px rgba(0,0,0,.25);
-        --link: #8bb3e8;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:     #0F1612;
+        --fg:     #EAF2EC;
+        --muted:  #A7B7AA;
+
+        --card:   #121C16;
+        --border: #223327;
+
+        --control-bg:     #0F1813;
+        --control-border: #223327;
+        --control-shadow: 0 10px 26px rgba(0,0,0,.35);
+
+        --link: #77D0C9;
+        --focus: color-mix(in oklab, var(--teal) 40%, #fff);
+
+        --header-bg: #0F1813;
+        --header-border: #2F5231;
       }
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
+    /* ===========================
+       BASE
+       =========================== */
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:
-        radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--deic-green) 8%, transparent), transparent 45%),
-        radial-gradient(900px 450px at 85% 0%, color-mix(in oklab, var(--deic-sprout) 8%, transparent), transparent 45%),
+        radial-gradient(900px 450px at 15% -10%, color-mix(in oklab, var(--green) 10%, transparent), transparent 45%),
+        radial-gradient(800px 400px at 85% 0%,  color-mix(in oklab, var(--teal) 10%,  transparent), transparent 45%),
         var(--bg);
-      color:var(--fg);
-      line-height:1.55;
+      color: var(--fg);
+      line-height: 1.55;
     }
+    :focus {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+    a { color: var(--link); text-decoration: none }
+    a:hover { text-decoration: underline }
 
-    /* ==== Header (opaque & elevated for contrast) ==== */
-    header{
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem }
+
+    /* ===========================
+       HEADER
+       =========================== */
+    header {
+      position: sticky; top: 0; z-index: 10;
       background: var(--header-bg);
       border-bottom: 4px solid var(--header-border);
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      backdrop-filter: blur(10px);
     }
-    .wrap{max-width:1100px; margin:0 auto; padding:1rem 1.25rem}
-    .bar{display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap}
-    .brand{display:flex; align-items:center; gap:.75rem}
-    .logo{
-      width:40px; height:40px; border-radius:10px;
-      background: conic-gradient(from 180deg, var(--deic-green), var(--deic-sprout), var(--deic-blue), var(--deic-green));
-      box-shadow:var(--shadow); border:1px solid var(--border);
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap }
+    .brand { display: flex; align-items: center; gap: .75rem }
+    .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: conic-gradient(from 180deg, var(--green), var(--teal), var(--green-dark), var(--green));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
-    h1{font-size: clamp(1.1rem, 2vw, 1.6rem); margin:0; letter-spacing:.2px; color: var(--deic-blue); font-weight:700}
-    .tagline{color: color-mix(in oklab, var(--muted) 85%, #000); font-size:.95rem; margin:.3rem 0 0 0; max-width:900px}
+    h1 { font-size: clamp(1.1rem, 2vw, 1.6rem); margin: 0; letter-spacing: .2px; color: var(--green-dark); font-weight: 800 }
+    .tagline { color: color-mix(in oklab, var(--muted) 85%, #000); font-size: .95rem; margin: .3rem 0 0 0; max-width: 900px }
 
-    .cta-row{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap}
-    .button-link{
-      display:inline-flex; align-items:center; gap:.5rem;
-      padding:.6rem .8rem; border-radius:.6rem; border:1px solid var(--control-border);
-      background: var(--accent); color: var(--accent-contrast); font-weight:600; text-decoration:none;
-      box-shadow: var(--control-shadow);
+    .cta-row { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap }
+    .button-link {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .6rem .9rem; border-radius: 10px; border: 1px solid var(--control-border);
+      background: var(--accent); color: var(--accent-contrast); font-weight: 700; text-decoration: none;
+      box-shadow: var(--control-shadow); cursor: pointer;
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
     }
-    .button-link:hover{filter:brightness(1.05)}
-    .secondary{ background: var(--control-bg); color: var(--fg); border-color: var(--control-border) }
+    .button-link:hover { filter: brightness(1.05) }
+    .button-link:active { transform: translateY(1px) }
+    .secondary { background: color-mix(in oklab, var(--green) 25%, white); color: #0B130E }
 
-    /* ==== Controls: crisp white surface ==== */
-    .controls{display:grid; grid-template-columns:1fr; gap:.75rem; margin-top:.75rem; background: color-mix(in oklab, var(--control-bg) 94%, transparent); border: 1px solid var(--control-border); border-radius: 12px; padding: .8rem; box-shadow: var(--control-shadow);}
-    .controls-row{display:grid; grid-template-columns:2fr 1fr 1fr auto auto; gap:.5rem}
-    @media (max-width:1000px){ .controls-row{grid-template-columns:1fr 1fr 1fr 1fr} }
-    @media (max-width:700px){ .controls-row{grid-template-columns:1fr 1fr} }
-    @media (max-width:520px){ .controls-row{grid-template-columns:1fr} }
-
-    label{font-size:.85rem; color:var(--muted)}
-    input, select, button{
-      padding:.6rem .7rem; border-radius:.6rem; border:1px solid var(--control-border);
-      background:var(--control-bg); color:var(--fg); outline:none;
+    /* ===========================
+       CONTROLS
+       =========================== */
+    .controls {
+      display: grid; grid-template-columns: 1fr; gap: .75rem; margin-top: .75rem;
+      background: color-mix(in oklab, var(--control-bg) 94%, transparent);
+      border: 1px solid var(--control-border);
+      border-radius: 12px; padding: .9rem; box-shadow: var(--control-shadow);
     }
-    input, select{width:100%}
-    button.primary{background:var(--accent); color:var(--accent-contrast); border:none; font-weight:600; box-shadow:var(--control-shadow); cursor:pointer}
-    button.primary:hover{filter:brightness(1.06)}
-    .token-box{display:none}
-    .inline{display:flex; align-items:center; gap:.5rem}
-    small{color:var(--muted)}
+    .controls-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap: .5rem }
+    @media (max-width: 1000px) { .controls-row { grid-template-columns: 1fr 1fr 1fr 1fr } }
+    @media (max-width: 700px)  { .controls-row { grid-template-columns: 1fr 1fr } }
+    @media (max-width: 520px)  { .controls-row { grid-template-columns: 1fr } }
 
-    /* ==== Main content ==== */
-    main{max-width:1100px; margin:0 auto; padding:1rem 1.25rem 3rem}
-    .status{margin:1rem 0; font-size:.95rem; color:var(--muted); display:flex; align-items:center; gap:.75rem; flex-wrap:wrap}
-    .rate{font-size:.85rem; color:var(--muted); padding:.1rem .4rem; border:1px solid var(--control-border); border-radius:999px; background:var(--control-bg)}
-    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1rem}
-    .card{
+    label { font-size: .85rem; color: var(--muted) }
+    input, select, button {
+      padding: .6rem .7rem; border-radius: .6rem; border: 1px solid var(--control-border);
+      background: var(--control-bg); color: var(--fg); outline: none;
+    }
+    input, select { width: 100% }
+    button.primary {
+      background: var(--accent); color: var(--accent-contrast); border: none; font-weight: 700;
+      box-shadow: var(--control-shadow); cursor: pointer; transition: filter .12s ease, transform .12s ease;
+    }
+    button.primary:hover { filter: brightness(1.06) }
+    button.primary:active { transform: translateY(1px) }
+
+    .token-box { display: none }
+    .inline { display: flex; align-items: center; gap: .5rem }
+    small { color: var(--muted) }
+
+    /* ===========================
+       MAIN
+       =========================== */
+    main { max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem 3rem }
+    .status { margin: 1rem 0; font-size: .95rem; color: var(--muted); display: flex; align-items: center; gap: .75rem; flex-wrap: wrap }
+    .rate { font-size: .85rem; color: var(--muted); padding: .1rem .4rem; border: 1px solid var(--control-border); border-radius: 999px; background: var(--control-bg) }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem }
+    .card {
       background: var(--card);
-      border:1px solid var(--border); border-radius:14px; padding:1rem; box-shadow:var(--shadow);
-      display:flex; flex-direction:column; gap:.6rem
+      border: 1px solid var(--border); border-radius: 14px; padding: 1rem; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: .6rem;
+      transition: transform .15s ease, box-shadow .15s ease;
     }
-    .card h3{margin:.1rem 0 .25rem; font-size:1.05rem; line-height:1.35}
-    .meta{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:.85rem}
-    .labels{display:flex; gap:.35rem; flex-wrap:wrap}
-    .label{background: color-mix(in oklab, var(--deic-green) 15%, white); color:var(--fg); border:1px solid var(--border); border-radius:999px; padding:.15rem .55rem; font-size:.78rem}
-    .assignees{display:flex; align-items:center; gap:.35rem}
-    .assignees img{width:20px; height:20px; border-radius:50%; border:1px solid var(--border)}
-    .pill{border-radius:999px; padding:.12rem .5rem; font-size:.78rem; border:1px solid var(--border)}
-    .pill.ok{background: color-mix(in oklab, #22c55e 18%, white); color:var(--fg)}
-    .pill.no{background: color-mix(in oklab, #ef4444 18%, white); color:var(--fg)}
-    .pill.na{background: color-mix(in oklab, #f59e0b 18%, white); color:var(--fg)}
-    .desc{font-size:.95rem}
-    .story-parts{display:flex; flex-wrap:wrap; gap:.35rem}
-    .story-part{border:1px dashed var(--border); border-radius:8px; padding:.25rem .5rem; font-size:.82rem; color:var(--muted)}
-    .empty,.error{text-align:center; color:var(--muted); padding:2rem 0}
-    a { color: var(--link); text-decoration: none }
-    a:hover { text-decoration: underline }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.14) }
+    .card h3 { margin: .1rem 0 .25rem; font-size: 1.05rem; line-height: 1.35 }
+    .meta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: .85rem }
+    .labels { display: flex; gap: .35rem; flex-wrap: wrap }
+    .label { background: color-mix(in oklab, var(--green) 22%, white); color: var(--fg); border: 1px solid var(--border); border-radius: 999px; padding: .15rem .55rem; font-size: .78rem }
+    .assignees { display: flex; align-items: center; gap: .35rem }
+    .assignees img { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border) }
+    .pill { border-radius: 999px; padding: .12rem .5rem; font-size: .78rem; border: 1px solid var(--border) }
+    .pill.ok { background: color-mix(in oklab, #22c55e 20%, white); color: var(--fg) }
+    .pill.no { background: color-mix(in oklab, #ef4444 20%, white); color: var(--fg) }
+    .pill.na { background: color-mix(in oklab, #f59e0b 20%, white); color: var(--fg) }
+    .desc { font-size: .95rem }
+    .story-parts { display: flex; flex-wrap: wrap; gap: .35rem }
+    .story-part { border: 1px dashed var(--border); border-radius: 8px; padding: .25rem .5rem; font-size: .82rem; color: var(--muted) }
+    .empty, .error { text-align: center; color: var(--muted); padding: 2rem 0 }
     .notice { font-size: .82rem; color: var(--muted) }
 
-    /* ==== Modal (New User Story) ==== */
-    .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:50}
-    .modal{width:min(720px, 92vw); background:var(--control-bg); color:var(--fg); border:1px solid var(--control-border); border-radius:14px; box-shadow:0 16px 40px rgba(0,0,0,.18)}
-    .modal header{position:static; background:var(--control-bg); border-bottom:1px solid var(--control-border); box-shadow:none}
-    .modal .wrap{padding:1rem 1.25rem}
-    .modal h2{margin:.2rem 0 0; font-size:1.2rem; color:var(--deic-blue)}
-    .modal .grid-form{display:grid; grid-template-columns:1fr 1fr; gap:.8rem}
-    .modal .grid-form .full{grid-column:1/-1}
-    .modal .actions{display:flex; justify-content:flex-end; gap:.5rem; margin-top:.5rem}
-
-    textarea{min-height:100px; resize:vertical}
-
-    /* ==== Print-friendly styling (for "Save as PDF") ==== */
-    @page { size: A4; margin: 16mm; }
-    @media print {
-      header, .controls, .status, .load-more, footer, .modal-backdrop, #detail-drawer { display: none !important; }
-      body { background: #fff; }
-      main { padding: 0 }
-      .grid { grid-template-columns: 1fr; gap: .8rem; }
-      .card { box-shadow: none; border-color: #ddd; }
-      a[href]::after { content: " (" attr(href) ")"; font-size: .8em; color: #888; }
+    /* Card title as button */
+    .btn-as-title {
+      background: transparent; border: 1px solid var(--control-border);
+      padding: .45rem .6rem; border-radius: .6rem; cursor: pointer; color: var(--fg);
+      transition: background .12s ease, transform .1s ease;
     }
+    .btn-as-title:hover { background: color-mix(in oklab, var(--teal) 10%, white) }
+    .btn-as-title:active { transform: translateY(1px) }
 
-    /* === NEW: Detail Drawer (issue viewer) === */
+    /* ===========================
+       MODAL (New Story)
+       =========================== */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 50 }
+    .modal {
+      width: min(760px, 92vw); background: var(--control-bg); color: var(--fg);
+      border: 1px solid var(--control-border); border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,.18);
+      display: flex; flex-direction: column; max-height: 92vh;
+    }
+    .modal header { position: static; background: var(--control-bg); border-bottom: 1px solid var(--control-border); box-shadow: none }
+    .modal .wrap { padding: 1rem 1.25rem }
+    .modal h2 { margin: .2rem 0 0; font-size: 1.2rem; color: var(--green-dark) }
+    .modal .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem }
+    .modal .grid-form .full { grid-column: 1 / -1 }
+    .modal .actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .5rem }
+    textarea { min-height: 110px; resize: vertical }
+
+    /* Tag selector (chips) */
+    .tag-options { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .5rem }
+    .chip {
+      padding: .28rem .65rem; border-radius: 999px; cursor: pointer; font-size: .8rem; user-select: none;
+      border: 1px solid var(--control-border); background: color-mix(in oklab, var(--green) 28%, white); color: #0A110D;
+      transition: filter .12s ease, transform .1s ease;
+    }
+    .chip:hover { filter: brightness(1.05) }
+    .chip.selected { background: var(--teal); color: white; border-color: color-mix(in oklab, var(--teal) 50%, black) }
+    .tag-selected { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .4rem }
+
+    /* ===========================
+       DRAWER (In-page viewer)
+       =========================== */
     #detail-drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 100%;
-      width: min(760px, 96vw);
-      background: var(--control-bg);
-      color: var(--fg);
-      border-left: 1px solid var(--control-border);
-      box-shadow: -12px 0 30px rgba(0,0,0,.18);
-      transform: translateX(110%);
-      transition: transform .28s ease;
-      z-index: 60;
-      display: flex;
-      flex-direction: column;
+      position: fixed; top: 0; right: 0; height: 100%; width: min(780px, 96vw);
+      background: var(--control-bg); color: var(--fg);
+      border-left: 1px solid var(--control-border); box-shadow: -12px 0 30px rgba(0,0,0,.18);
+      transform: translateX(110%); transition: transform .25s ease; z-index: 60;
+      display: flex; flex-direction: column;
     }
-    #detail-drawer.open { transform: translateX(0); }
+    #detail-drawer.open { transform: translateX(0) }
     #detail-header {
-      display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+      display: flex; align-items: center; justify-content: space-between; gap: .6rem;
       padding: .9rem 1rem; border-bottom: 1px solid var(--control-border);
       background: color-mix(in oklab, var(--control-bg) 90%, transparent);
     }
-    #detail-title { font-size: 1.05rem; font-weight: 700; color: var(--deic-blue); margin: 0; }
-    #detail-body { padding: 1rem; overflow: auto; }
-    #detail-body .section { margin-bottom: 1rem; }
-    .btn-ghost { background: transparent; border:1px solid var(--control-border); padding:.5rem .7rem; border-radius:.6rem; cursor:pointer; color: var(--fg); }
-    .btn-ghost:hover{ background: color-mix(in oklab, var(--accent) 10%, white); }
-    .story-badge { border:1px dashed var(--border); border-radius: 8px; padding:.25rem .5rem; font-size:.85rem; color: var(--muted); }
-    .markdown h1,.markdown h2,.markdown h3{margin: .8rem 0 .4rem; color: var(--deic-blue)}
-    .markdown code{background: color-mix(in oklab, #888 12%, white); padding:.05rem .35rem; border-radius:.3rem}
-    .markdown pre code{display:block; padding:.6rem .8rem; overflow:auto}
+    #detail-title { font-size: 1.05rem; font-weight: 800; color: var(--green-dark); margin: 0 }
+    #detail-body { padding: 1rem; overflow: auto }
+    #detail-body .section { margin-bottom: 1rem }
+    .btn-ghost { background: transparent; border: 1px solid var(--control-border); padding: .5rem .7rem; border-radius: .6rem; cursor: pointer; color: var(--fg) }
+    .btn-ghost:hover { background: color-mix(in oklab, var(--teal) 10%, white) }
+
+    /* Markdown (simple) */
+    .markdown h1, .markdown h2, .markdown h3 { margin: .8rem 0 .4rem; color: var(--green-dark) }
+    .markdown code { background: color-mix(in oklab, #888 12%, white); padding: .05rem .35rem; border-radius: .3rem }
+    .markdown pre code { display: block; padding: .6rem .8rem; overflow: auto }
+
+    /* ===========================
+       PRINT STYLES (for Save as PDF)
+       =========================== */
+    @page { size: A4; margin: 16mm; }
+    @media print {
+      header, .controls, .status, .load-more, footer, .modal-backdrop, #detail-drawer { display: none !important }
+      body { background: #fff }
+      main { padding: 0 }
+      .grid { grid-template-columns: 1fr; gap: .8rem }
+      .card { box-shadow: none; border-color: #ddd }
+      a[href]::after { content: " (" attr(href) ")"; font-size: .8em; color: #888 }
+    }
   </style>
 </head>
 <body>
+  <!-- ===========================
+       HEADER
+       =========================== -->
   <header>
     <div class="wrap">
       <div class="bar" role="navigation" aria-label="Top bar">
@@ -213,7 +276,7 @@
           </div>
         </div>
         <div class="cta-row">
-          <button id="open-modal" class="button-link">New Story</button>
+          <button id="open-modal" class="button-link" aria-haspopup="dialog">New Story</button>
           <button id="export" class="button-link secondary">Export CSV</button>
           <button id="print" class="button-link secondary">Print / Save PDF</button>
         </div>
@@ -244,7 +307,12 @@
             </label>
           </div>
           <div class="inline" style="align-items:end">
-            <small>Backend: <a href="https://github.com/BrigitaPVoll/User_Story_Library" target="_blank" rel="noopener">BrigitaPVoll/User_Story_Library</a></small>
+            <small>
+              Backend:
+              <a href="https://github.com/BrigitaPVoll/User_Story_Library" target="_blank" rel="noopener">
+                BrigitaPVoll/User_Story_Library
+              </a>
+            </small>
           </div>
         </div>
 
@@ -253,7 +321,8 @@
           <input id="token" type="password" placeholder="ghp_… (classic) or fine-grained token" />
           <div class="notice">
             Stored locally in your browser (localStorage) to raise API limits and enable issue creation.
-            Docs: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">PATs</a>,
+            Docs:
+            <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">PATs</a>,
             <a href="https://stackoverflow.com/questions/63906613/minimal-set-of-scopes-to-push-to-github-using-an-access-token" target="_blank" rel="noopener">scopes</a>
           </div>
         </div>
@@ -261,11 +330,15 @@
     </div>
   </header>
 
+  <!-- ===========================
+       MAIN
+       =========================== -->
   <main>
     <div class="wrap">
       <div class="status" id="status" aria-live="polite">
         <span id="rate" class="rate" title="GitHub REST API rate limit">API …</span>
       </div>
+
       <section id="stories" class="grid" aria-label="User stories list"></section>
       <div class="empty" id="empty" style="display:none;">No user stories found.</div>
       <div class="error" id="error" style="display:none;"></div>
@@ -277,10 +350,12 @@
   </main>
 
   <footer>
-    <div class="wrap"><small>Powered by GitHub Issues • DeiC-inspired UI</small></div>
+    <div class="wrap"><small>Powered by GitHub Issues • Modern Green/Teal UI</small></div>
   </footer>
 
-  <!-- ==== Modal: New User Story (Create GitHub Issue) ==== -->
+  <!-- ===========================
+       MODAL — New User Story
+       =========================== -->
   <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
       <header>
@@ -289,7 +364,7 @@
           <p class="notice">Creates a GitHub Issue directly in <strong>BrigitaPVoll/User_Story_Library</strong>.</p>
         </div>
       </header>
-      <div class="wrap">
+      <div class="wrap" style="overflow:auto">
         <form id="story-form">
           <div class="grid-form">
             <div class="full">
@@ -325,9 +400,27 @@
               </select>
             </div>
 
-            <div>
-              <label for="labels">Labels (comma)</label>
-              <input id="labels" type="text" value="user-story" />
+            <!-- Tag selector (chips + manual input) -->
+            <div class="full">
+              <label>Labels</label>
+
+              <div id="tag-options" class="tag-options" aria-label="Suggested labels">
+                <!-- Default suggestions; you can edit this list -->
+                <span class="chip" data-value="user-story">user-story</span>
+                <span class="chip" data-value="FAIR">FAIR</span>
+                <span class="chip" data-value="metadata">metadata</span>
+                <span class="chip" data-value="interoperability">interoperability</span>
+                <span class="chip" data-value="HPC">HPC</span>
+                <span class="chip" data-value="EOSC">EOSC</span>
+                <span class="chip" data-value="AI Factory">AI Factory</span>
+                <span class="chip" data-value="data-governance">data-governance</span>
+                <span class="chip" data-value="sustainability">sustainability</span>
+              </div>
+
+              <div class="tag-selected" id="tag-selected" aria-live="polite"></div>
+
+              <input id="labels" type="text" placeholder="Add comma-separated labels (optional)" />
+              <small class="notice">Click chips to add/remove. You can also type custom labels (comma-separated). “user-story” will be included automatically if missing.</small>
             </div>
 
             <div class="full">
@@ -337,21 +430,22 @@
           </div>
 
           <div class="actions">
-            <button type="button" id="cancel-modal">Cancel</button>
+            <button type="button" id="cancel-modal" class="btn-ghost">Cancel</button>
             <button type="submit" class="primary">Create Story</button>
           </div>
 
           <p class="notice" style="margin-top:.5rem;">
             Requires a GitHub token (set in <strong>Token</strong>) with permission to create issues.
-            Public repo: classic <code>public_repo</code> or fine‑grained token with <em>Contents: Read &amp; write</em> on this repo.
-            See <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">docs</a>.
+            Public repo: classic <code>public_repo</code> or a fine‑grained token with <em>Issues: Read &amp; write</em> on this repo.
           </p>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- === NEW: Right-side detail drawer === -->
+  <!-- ===========================
+       DRAWER — In-page story viewer
+       =========================== -->
   <aside id="detail-drawer" aria-hidden="true" aria-label="User story detail">
     <div id="detail-header">
       <h3 id="detail-title">Loading…</h3>
@@ -369,6 +463,9 @@
     </div>
   </aside>
 
+  <!-- ===========================
+       SCRIPT
+       =========================== -->
   <script>
     // ---------- Configuration ----------
     const OWNER = 'BrigitaPVoll';
@@ -382,13 +479,14 @@
 
     // ---------- DOM ----------
     const $ = sel => document.querySelector(sel);
+
     const storiesEl = $('#stories');
     const statusEl  = $('#status');
     const emptyEl   = $('#empty');
     const errorEl   = $('#error');
     const moreBtn   = $('#more');
 
-    const tokenBox = $('#token-box');
+    const tokenBox  = $('#token-box');
     const tokenInput = $('#token');
 
     const backdrop = $('#backdrop');
@@ -397,49 +495,119 @@
     const storyForm = $('#story-form');
     const rateEl = $('#rate');
 
-    // NEW: Detail drawer elements
+    // Drawer
     const drawer = $('#detail-drawer');
     const detailTitle = $('#detail-title');
     const detailMeta = $('#detail-meta');
     const detailStory = $('#detail-story');
-    theDetailMarkdown = $('#detail-markdown'); // intentionally without 'const' to avoid redeclaration in some bundlers
-    const detailMarkdown = theDetailMarkdown;
+    const detailMarkdown = $('#detail-markdown');
     const detailComments = $('#detail-comments');
     const detailCloseBtn = $('#detail-close');
     const ghLink = $('#detail-gh');
     const toggleCommentsBtn = $('#toggle-comments');
 
+    // Tag selector
+    const tagOptions = $('#tag-options');
+    const tagSelected = $('#tag-selected');
+    const labelsInput = $('#labels');
+    let selectedTags = [];
+
     // ---------- Utilities ----------
-    function escapeHTML(str){
-      return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[s]);
+    function escapeHTML(str) {
+      return String(str ?? '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      })[s]);
     }
-    function fmtDate(iso){
-      try{
+    function fmtDate(iso) {
+      try {
         const d = new Date(iso);
-        return new Intl.DateTimeFormat('en', {dateStyle:'medium', timeStyle:'short'}).format(d);
-      }catch{ return iso || '' }
+        return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+      } catch { return iso || '' }
     }
-    function setStatus(text){ statusEl.firstChild ? statusEl.firstChild.textContent = text || '' : (statusEl.textContent = text || ''); }
-    function showError(msg){
-      errorEl.style.display='block';
+    function setStatus(text) {
+      // Show text near the rate badge
+      if (rateEl && rateEl.parentElement) {
+        const id = 'status-inline';
+        let node = document.getElementById(id);
+        if (!node) {
+          node = document.createElement('span');
+          node.id = id;
+          node.style.marginLeft = '.5rem';
+          node.style.color = 'var(--muted)';
+          statusEl.appendChild(node);
+        }
+        node.textContent = text || '';
+      }
+    }
+    function showError(msg) {
+      errorEl.style.display = 'block';
       errorEl.textContent = 'Error: ' + msg;
       setStatus('');
     }
-    function updateRateFromHeaders(h){
-      try{
+    function updateRateFromHeaders(h) {
+      try {
         const limit = h.get('x-ratelimit-limit');
         const remaining = h.get('x-ratelimit-remaining');
         const reset = h.get('x-ratelimit-reset');
-        if(limit && remaining && rateEl){
+        if (limit && remaining && rateEl) {
           const secs = reset ? Math.max(0, parseInt(reset,10) - Math.floor(Date.now()/1000)) : null;
-          const mins = secs!=null ? Math.ceil(secs/60) : null;
+          const mins = secs != null ? Math.ceil(secs/60) : null;
           rateEl.textContent = `API ${remaining}/${limit}${mins!=null ? ` (resets ~${mins}m)` : ''}`;
         }
-      }catch{}
+      } catch {}
     }
 
-    // ---------- Parse template from issue body ----------
-    function parseStory(body){
+    // ---------- Markdown (simple & safe-ish) ----------
+    function markdownToHTML(md) {
+      if (!md) return '';
+      // Preserve code blocks first
+      const fences = [];
+      md = md.replace(/```([\\s\\S]*?)```/g, (m, code) => {
+        const token = `[[CODE_BLOCK_${fences.length}]]`;
+        fences.push(code);
+        return token;
+      });
+
+      // Escape HTML
+      let s = escapeHTML(md);
+
+      // Headings
+      s = s.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+           .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+           .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+           .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+           .replace(/^## (.*)$/gm,  '<h2>$1</h2>')
+           .replace(/^# (.*)$/gm,   '<h1>$1</h1>');
+
+      // Inline code
+      s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Bold/italic
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+           .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+      // Links [text](url)
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+      // Lists (- item)
+      s = s.replace(/(^|\n)\s*-\s+(.*)(?=\n|$)/g, '$1<li>$2</li>');
+      s = s.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g, '');
+
+      // Paragraphs (simple)
+      s = s.replace(/(\n\s*\n)/g, '</p><p>');
+      s = `<p>${s}</p>`.replace(/<p>\s*<\/p>/g,'');
+
+      // Reinsert code blocks safely
+      s = s.replace(/\[\[CODE_BLOCK_(\d+)]]/g, (m, idx) => {
+        const code = fences[Number(idx)] ?? '';
+        return `<pre><code>${escapeHTML(code)}</code></pre>`;
+      });
+
+      return s;
+    }
+
+    // ---------- Parse story line & sections ----------
+    function parseStory(body) {
       const raw = body || '';
       const lines = raw.split(/\r?\n/);
 
@@ -471,48 +639,15 @@
       return { storyLine, role, goal, benefit, context, consent };
     }
 
-    // === NEW: Minimal Markdown -> HTML (safe-ish) ===
-    function markdownToHTML(md){
-      if (!md) return '';
-      let s = md;
-
-      // Escape first, then re-introduce markdown constructs
-      s = escapeHTML(s);
-
-      // Headings
-      s = s.replace(/^###### (.*)$/gm, '<h6>$1</h6>')
-           .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
-           .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
-           .replace(/^### (.*)$/gm, '<h3>$1</h3>')
-           .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-           .replace(/^# (.*)$/gm, '<h1>$1</h1>');
-
-      // Code blocks ``` ```
-      s = s.replace(/```([\s\S]*?)```/g, (m, code) => `<pre><code>${code}</code></pre>`);
-
-      // Inline code
-      s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-      // Bold/italic
-      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-           .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-      // Links [text](url)
-      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-
-      // Lists (simple)
-      s = s.replace(/(^|\n)\s*-\s+(.*)(?=\n|$)/g, '$1<li>$2</li>');
-      s = s.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g, '');
-
-      // Paragraphs (simple)
-      s = s.replace(/(\n\s*\n)/g, '</p><p>');
-      s = `<p>${s}</p>`.replace(/<p>\s*<\/p>/g,'');
-
-      return s;
+    // ---------- GitHub API ----------
+    function authHeaders() {
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      const token = localStorage.getItem('GITHUB_TOKEN') || (tokenInput?.value?.trim() || '');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      return headers;
     }
 
-    // ---------- GitHub API ----------
-    function buildIssuesURL({state, page}){
+    function buildIssuesURL({state, page}) {
       const base = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues`;
       const params = new URLSearchParams({
         state: state || 'open',
@@ -522,69 +657,53 @@
       return `${base}?${params}`;
     }
 
-    async function fetchIssues({append=false}={}){
+    async function fetchIssues({append=false}={}) {
       const state = $('#state').value;
       const url = buildIssuesURL({state, page: currentPage});
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      try{
-        if(!append){ setStatus('Loading user stories… '); errorEl.style.display='none'; }
-        const res = await fetch(url, { headers });
+      try {
+        if (!append){ setStatus('Loading user stories…'); errorEl.style.display='none'; }
+        const res = await fetch(url, { headers: authHeaders() });
         updateRateFromHeaders(res.headers);
-        if(!res.ok){
-          if(res.status === 401) throw new Error('401 Unauthorized — invalid or missing token');
-          if(res.status === 403) throw new Error('403 Forbidden or rate-limited — add a token or wait and retry');
+        if (!res.ok) {
+          if (res.status === 401) throw new Error('401 Unauthorized — invalid or missing token');
+          if (res.status === 403) throw new Error('403 Forbidden or rate-limited — add a token or wait and retry');
           const text = await res.text();
           throw new Error(`${res.status} ${res.statusText} — ${text}`);
         }
         const data = await res.json();
         const issues = data.filter(it => !it.pull_request);
-
         lastBatch = issues;
-        if (append){ accumulated = accumulated.concat(issues); }
-        else { accumulated = issues; }
-
+        accumulated = append ? accumulated.concat(issues) : issues;
         renderIssues(accumulated);
         setStatus(`Loaded ${accumulated.length} user stor${accumulated.length===1?'y':'ies'}`);
         moreBtn.style.display = issues.length === PER_PAGE ? 'inline-block' : 'none';
-      }catch(err){ showError(err.message); }
+      } catch (err) { showError(err.message); }
     }
 
-    // === NEW: Fetch a single issue by number ===
-    async function fetchIssue(number){
+    async function fetchIssue(number) {
       const url = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues/${number}`;
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(url, { headers });
+      const res = await fetch(url, { headers: authHeaders() });
       updateRateFromHeaders(res.headers);
-      if (!res.ok){
+      if (!res.ok) {
         const text = await res.text();
         throw new Error(`${res.status} ${res.statusText} — ${text}`);
       }
       return res.json();
     }
 
-    // === NEW: Fetch comments for an issue (first page) ===
-    async function fetchComments(number){
+    async function fetchComments(number) {
       const url = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues/${number}/comments?per_page=50`;
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(url, { headers });
+      const res = await fetch(url, { headers: authHeaders() });
       updateRateFromHeaders(res.headers);
-      if (!res.ok){
+      if (!res.ok) {
         const text = await res.text();
         throw new Error(`${res.status} ${res.statusText} — ${text}`);
       }
       return res.json();
     }
 
-    // ---------- Rendering ----------
-    function renderIssues(items){
+    // ---------- Render list ----------
+    function renderIssues(items) {
       const q = ($('#search').value || '').toLowerCase().trim();
       const onlyTemplate = $('#only-template').checked;
 
@@ -607,18 +726,17 @@
       storiesEl.innerHTML = '';
       emptyEl.style.display = filtered.length ? 'none' : 'block';
 
-      for (const i of filtered){
+      for (const i of filtered) {
         const parsed = parseStory(i.body);
         const labels = (i.labels||[]).map(l=>l.name).sort();
-        const assignees = (i.assignees||[]);
         const updated = i.updated_at ? fmtDate(i.updated_at) : '';
         const title = (i.title && i.title.trim()) || parsed.storyLine || `(issue #${i.number})`;
 
         const storyParts = (parsed.role || parsed.goal || parsed.benefit)
           ? `<div class="story-parts">
-               ${parsed.role ? `<span class="story-part">Role: ${escapeHTML(parsed.role)}</span>`:''}
-               ${parsed.goal ? `<span class="story-part">Goal: ${escapeHTML(parsed.goal)}</span>`:''}
-               ${parsed.benefit ? `<span class="story-part">Benefit: ${escapeHTML(parsed.benefit)}</span>`:''}
+               ${parsed.role ? `<span class="story-part">Role: ${escapeHTML(parsed.role)}</span>` : ''}
+               ${parsed.goal ? `<span class="story-part">Goal: ${escapeHTML(parsed.goal)}</span>` : ''}
+               ${parsed.benefit ? `<span class="story-part">Benefit: ${escapeHTML(parsed.benefit)}</span>` : ''}
              </div>` : '';
 
         const consentPill = parsed.consent === 'Yes' ? 'ok' : (parsed.consent === 'No' ? 'no' : 'na');
@@ -627,8 +745,7 @@
         card.className = 'card';
         card.innerHTML = `
           <h3>
-            <!-- CHANGED: make title a button that opens the viewer -->
-            <button class="btn-ghost open-issue" data-number="${i.number}" title="Open in page">${escapeHTML(title)}</button>
+            <button class="btn-as-title open-issue" data-number="${i.number}" title="Open in page">${escapeHTML(title)}</button>
           </h3>
           <div class="meta">
             <span>#${i.number}</span><span>•</span>
@@ -636,7 +753,7 @@
             ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>` : ''}
           </div>
 
-          ${parsed.storyLine ? `<div class="desc">${escapeHTML(parsed.storyLine)}</div>`:''}
+          ${parsed.storyLine ? `<div class="desc">${escapeHTML(parsed.storyLine)}</div>` : ''}
           ${storyParts}
 
           ${parsed.context ? `
@@ -646,7 +763,7 @@
             </div>` : ''}
 
           <div class="meta" style="margin-top:.35rem;">
-            <span class="pill ${consentPill}">Contact consent: ${escapeHTML(parsed.consent)}</span>
+            <span class="pill ${consentPill}">Contact consent: ${escapeHTML(parsed.consent || 'N/A')}</span>
           </div>
 
           <div class="meta">
@@ -655,21 +772,14 @@
             </div>
           </div>
 
-          ${assignees.length ? `
-            <div class="meta assignees">
-              <span>Assignees:</span>
-              ${assignees.map(a=>`<img src="${escapeHTML(a.avatar_url)}" alt="${escapeHTML(a.login)}" />`).join('')}
-            </div>` : ''}
-
           <div class="meta">
-            <!-- Keep GitHub as secondary action -->
             <a href="${escapeHTML(i.html_url)}" target="_blank" rel="noopener">Open in GitHub</a>
           </div>
         `;
         storiesEl.appendChild(card);
       }
 
-      // Wire up click handlers for the new buttons
+      // wire up in-page openers
       storiesEl.querySelectorAll('.open-issue').forEach(btn => {
         btn.addEventListener('click', () => {
           const n = parseInt(btn.getAttribute('data-number'), 10);
@@ -679,7 +789,7 @@
     }
 
     // ---------- CSV export ----------
-    function toCSV(items){
+    function toCSV(items) {
       const header = ["number","title","state","updated_iso","labels","role","goal","benefit","consent","context","url"];
       const rows = items.map(i => {
         const p = parseStory(i.body);
@@ -706,7 +816,7 @@
       const csv = [header.join(','), ...rows.map(r => r.map(escapeCell).join(','))].join('\n');
       return csv;
     }
-    function downloadCSV(){
+    function downloadCSV() {
       const csv = toCSV(accumulated);
       const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
       const a = document.createElement('a');
@@ -718,9 +828,9 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // === NEW: Open/close viewer and render content ===
-    async function openIssue(number, {push=false} = {}){
-      try{
+    // ---------- Drawer: open/close & render ----------
+    async function openIssue(number, {push=false} = {}) {
+      try {
         setStatus(`Opening #${number}…`);
         drawer.classList.add('open');
         drawer.setAttribute('aria-hidden', 'false');
@@ -730,16 +840,17 @@
         detailMarkdown.innerHTML = '';
         detailComments.style.display = 'none';
         detailComments.innerHTML = '';
+        ghLink.removeAttribute('href');
 
-        if (push){
+        if (push) {
           const url = new URL(location.href);
           url.searchParams.set('issue', String(number));
-          history.pushState({issue:number}, '', url);
+          history.pushState({ issue: number }, '', url);
         }
 
         const issue = await fetchIssue(number);
 
-        // Title & GH link
+        // Title & GitHub link
         detailTitle.textContent = issue.title || `Issue #${issue.number}`;
         ghLink.href = issue.html_url || '#';
 
@@ -751,20 +862,20 @@
           <div class="meta" style="margin-bottom:.5rem;">
             <span>#${issue.number}</span><span>•</span>
             <span>${escapeHTML(issue.state || '')}</span>
-            ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>`:''}
+            ${updated ? `<span>•</span><span>Updated ${escapeHTML(updated)}</span>` : ''}
           </div>
-          ${lblHTML ? `<div class="labels">${lblHTML}</div>`:''}
+          ${lblHTML ? `<div class="labels">${lblHTML}</div>` : ''}
         `;
 
         // Extract story parts
         const parsed = parseStory(issue.body || '');
         const consentPill = parsed.consent === 'Yes' ? 'ok' : (parsed.consent === 'No' ? 'no' : 'na');
         detailStory.innerHTML = `
-          ${parsed.storyLine ? `<div class="desc" style="margin:.25rem 0  .4rem;">${escapeHTML(parsed.storyLine)}</div>`:''}
+          ${parsed.storyLine ? `<div class="desc" style="margin:.25rem 0 .4rem;">${escapeHTML(parsed.storyLine)}</div>` : ''}
           <div class="story-parts" style="margin-bottom:.35rem;">
-            ${parsed.role ? `<span class="story-badge">Role: ${escapeHTML(parsed.role)}</span>`:''}
-            ${parsed.goal ? `<span class="story-badge">Goal: ${escapeHTML(parsed.goal)}</span>`:''}
-            ${parsed.benefit ? `<span class="story-badge">Benefit: ${escapeHTML(parsed.benefit)}</span>`:''}
+            ${parsed.role ? `<span class="story-part">Role: ${escapeHTML(parsed.role)}</span>` : ''}
+            ${parsed.goal ? `<span class="story-part">Goal: ${escapeHTML(parsed.goal)}</span>` : ''}
+            ${parsed.benefit ? `<span class="story-part">Benefit: ${escapeHTML(parsed.benefit)}</span>` : ''}
             <span class="pill ${consentPill}">Consent: ${escapeHTML(parsed.consent || 'N/A')}</span>
           </div>
           ${
@@ -775,49 +886,49 @@
           }
         `;
 
-        // Full body (Markdown-rendered)
+        // Full body
         detailMarkdown.innerHTML = `
           <h3>Full description</h3>
           ${markdownToHTML(issue.body || '_No description provided._')}
         `;
 
         setStatus('');
-      }catch(err){
+      } catch (err) {
         detailTitle.textContent = 'Failed to load';
         detailMarkdown.innerHTML = `<div class="notice">Error: ${escapeHTML(err.message)}</div>`;
         setStatus('');
       }
     }
 
-    function closeIssue({pop=false} = {}){
+    function closeIssue({pop=false} = {}) {
       drawer.classList.remove('open');
       drawer.setAttribute('aria-hidden', 'true');
-      if (!pop){
+      if (!pop) {
         const url = new URL(location.href);
         url.searchParams.delete('issue');
         history.pushState({}, '', url);
       }
     }
 
-    // Load comments lazily
-    toggleCommentsBtn.addEventListener('click', async ()=>{
+    // Comments loader
+    toggleCommentsBtn.addEventListener('click', async () => {
       const params = new URLSearchParams(location.search);
       const n = parseInt(params.get('issue') || '0', 10);
       if (!n) return;
-      if (detailComments.style.display === 'none'){
+      if (detailComments.style.display === 'none') {
         toggleCommentsBtn.textContent = 'Loading…';
-        try{
+        try {
           const comments = await fetchComments(n);
-          if (!comments.length){
+          if (!comments.length) {
             detailComments.innerHTML = `<div class="notice">No comments.</div>`;
-          }else{
+          } else {
             detailComments.innerHTML = `
               <h3 style="margin-top:0">Comments</h3>
               ${comments.map(c => `
                 <div style="border-top:1px solid var(--control-border); padding:.6rem 0;">
                   <div class="meta" style="margin-bottom:.25rem;">
-                    <img src="${escapeHTML((c.user||{}).avatar_url||'')}" alt="" style="width:18px; height:18px; border-radius:50%; border:1px solid var(--border)" />
-                    <strong>${escapeHTML((c.user||{}).login||'')}</strong>
+                    <img src="${escapeHTML((c.user||{}).avatar_url || '')}" alt="" width="18" height="18" style="border-radius:50%; border:1px solid var(--border)" />
+                    <strong>${escapeHTML((c.user||{}).login || '')}</strong>
                     <span>•</span><span>${escapeHTML(fmtDate(c.created_at))}</span>
                   </div>
                   <div class="markdown">${markdownToHTML(c.body || '')}</div>
@@ -827,115 +938,18 @@
           }
           detailComments.style.display = 'block';
           toggleCommentsBtn.textContent = 'Hide comments';
-        }catch(e){
+        } catch (e) {
           detailComments.innerHTML = `<div class="notice">Failed to load comments: ${escapeHTML(e.message)}</div>`;
           detailComments.style.display = 'block';
           toggleCommentsBtn.textContent = 'Hide comments';
         }
-      }else{
+      } else {
         detailComments.style.display = 'none';
         toggleCommentsBtn.textContent = 'Comments';
       }
     });
 
-    // ---------- Events ----------
-    $('#refresh').addEventListener('click', () => {
-      currentPage = 1;
-      fetchIssues({append:false});
-    });
-    $('#state').addEventListener('change', () => {
-      currentPage = 1;
-      fetchIssues({append:false});
-    });
-    $('#search').addEventListener('input', () => renderIssues(accumulated));
-    $('#only-template').addEventListener('change', () => renderIssues(accumulated));
-
-    $('#toggle-token').addEventListener('click', () => {
-      const isOpen = tokenBox.style.display !== 'none';
-      tokenBox.style.display = isOpen ? 'none' : 'grid';
-      $('#toggle-token').setAttribute('aria-expanded', String(!isOpen));
-    });
-    $('#token').addEventListener('change', (e) => {
-      const v = e.target.value.trim();
-      if (v) localStorage.setItem('GITHUB_TOKEN', v);
-    });
-
-    $('#export').addEventListener('click', downloadCSV);
-    $('#print').addEventListener('click', () => window.print());
-    moreBtn.addEventListener('click', () => {
-      currentPage += 1;
-      fetchIssues({append:true});
-    });
-
-    // Modal open/close
-    openModalBtn.addEventListener('click', () => { backdrop.style.display = 'flex'; });
-    cancelModalBtn.addEventListener('click', () => { backdrop.style.display = 'none'; });
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.style.display = 'none'; });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape'){
-        if (drawer.classList.contains('open')) closeIssue();
-        else backdrop.style.display = 'none';
-      }
-    });
-
-    // Create story -> GitHub Issue
-    storyForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = $('#title').value.trim();
-      const role = $('#role').value.trim();
-      const goal = $('#goal').value.trim();
-      const benefit = $('#benefit').value.trim();
-
-      if (!title) { alert('Title is required'); return; }
-      if (!role || !goal) { alert('Please provide at least the role and the goal.'); return; }
-
-      const payload = {
-        title,
-        role,
-        goal,
-        benefit,
-        context: $('#context').value.trim(),
-        consent: $('#consent').value,
-        labels: $('#labels').value.trim(),
-        assignees: $('#assignees').value.trim()
-      };
-
-      try {
-        setStatus('Creating issue… ');
-        const issue = await createIssue(payload);
-        setStatus('Issue created successfully.');
-        backdrop.style.display = 'none';
-
-        // Clear the form and re-render
-        storyForm.reset();
-        $('#labels').value = 'user-story';
-        accumulated = [issue, ...accumulated];
-        renderIssues(accumulated);
-
-        // Open the new issue directly in the drawer
-        openIssue(issue.number, { push: true });
-      } catch (err) {
-        alert('Failed to create issue: ' + err.message);
-        setStatus('');
-      }
-    });
-
-    // NEW: Drawer close button
-    detailCloseBtn.addEventListener('click', () => closeIssue());
-
-    // ---------- Routing ----------
-    window.addEventListener('popstate', () => {
-      const params = new URLSearchParams(location.search);
-      const issue = params.get('issue');
-      if (issue){
-        openIssue(parseInt(issue,10), { push:false });
-      }else{
-        // Close if no issue in URL
-        if (drawer.classList.contains('open')) closeIssue({pop:true});
-      }
-    });
-
-    // ---------- Build issue body for creation ----------
+    // ---------- Create issue ----------
     function buildIssueBody({role, goal, benefit, context, consent}) {
       const line = (role || goal || benefit)
         ? `As a ${role || '_____'}, I want to ${goal || '______'}, so that I can ${benefit || '________'}.`
@@ -954,9 +968,7 @@
       ].join('\n');
     }
 
-    async function createIssue({
-      title, role, goal, benefit, context, consent, labels, assignees
-    }) {
+    async function createIssue({ title, role, goal, benefit, context, consent, labels, assignees }) {
       const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
       if (!token) throw new Error('Missing token. Set Token in the header.');
 
@@ -969,7 +981,7 @@
       const body = {
         title: title.trim(),
         body: buildIssueBody({role, goal, benefit, context, consent}),
-        labels: (labels || 'user-story').split(',').map(s => s.trim()).filter(Boolean),
+        labels: (labels || []).map(s => s.trim()).filter(Boolean),
         assignees: (assignees || '').split(',').map(s => s.trim()).filter(Boolean)
       };
 
@@ -977,22 +989,156 @@
       const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
       updateRateFromHeaders(res.headers);
       if (!res.ok) {
-        if(res.status === 401) throw new Error('401 Unauthorized — check your token');
-        if(res.status === 403) throw new Error('403 Forbidden or rate-limited — verify scopes or wait');
-        if(res.status === 410) throw new Error('410 Gone — issues disabled in this repository');
+        if (res.status === 401) throw new Error('401 Unauthorized — check your token');
+        if (res.status === 403) throw new Error('403 Forbidden or rate-limited — verify scopes or wait');
+        if (res.status === 410) throw new Error('410 Gone — issues disabled in this repository');
         const text = await res.text();
         throw new Error(`${res.status} ${res.statusText} — ${text}`);
       }
       return res.json();
     }
 
+    // ---------- Events ----------
+    $('#refresh').addEventListener('click', () => {
+      currentPage = 1; fetchIssues({append: false});
+    });
+    $('#state').addEventListener('change', () => {
+      currentPage = 1; fetchIssues({append: false});
+    });
+    $('#search').addEventListener('input', () => renderIssues(accumulated));
+    $('#only-template').addEventListener('change', () => renderIssues(accumulated));
+
+    $('#toggle-token').addEventListener('click', () => {
+      const isOpen = tokenBox.style.display !== 'none';
+      tokenBox.style.display = isOpen ? 'none' : 'grid';
+      $('#toggle-token').setAttribute('aria-expanded', String(!isOpen));
+    });
+    $('#token').addEventListener('change', (e) => {
+      const v = e.target.value.trim();
+      if (v) localStorage.setItem('GITHUB_TOKEN', v);
+    });
+
+    $('#export').addEventListener('click', downloadCSV);
+    $('#print').addEventListener('click', () => window.print());
+    moreBtn.addEventListener('click', () => {
+      currentPage += 1; fetchIssues({append: true});
+    });
+
+    // Modal open/close
+    openModalBtn.addEventListener('click', () => { backdrop.style.display = 'flex'; });
+    cancelModalBtn.addEventListener('click', () => { backdrop.style.display = 'none'; });
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.style.display = 'none'; });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape'){
+        if (drawer.classList.contains('open')) closeIssue();
+        else backdrop.style.display = 'none';
+      }
+    });
+
+    // Tag selector interactions
+    function renderSelectedTags() {
+      tagSelected.innerHTML = selectedTags.map(t => `<span class="chip selected" data-value="${escapeHTML(t)}">${escapeHTML(t)}</span>`).join('');
+      // Keep input in sync for visibility, but creation will use selectedTags + typed unique set
+      labelsInput.value = selectedTags.join(', ');
+    }
+    tagOptions.addEventListener('click', (e) => {
+      const el = e.target;
+      if (!el.classList.contains('chip')) return;
+      const val = el.getAttribute('data-value');
+      const idx = selectedTags.indexOf(val);
+      if (idx === -1) {
+        selectedTags.push(val);
+        el.classList.add('selected');
+      } else {
+        selectedTags.splice(idx, 1);
+        el.classList.remove('selected');
+      }
+      renderSelectedTags();
+    });
+    tagSelected.addEventListener('click', (e) => {
+      const el = e.target;
+      if (!el.classList.contains('chip')) return;
+      const val = el.getAttribute('data-value');
+      selectedTags = selectedTags.filter(t => t !== val);
+      // also toggle off in options list if present
+      const inOptions = tagOptions.querySelector(`.chip[data-value="${CSS.escape(val)}"]`);
+      if (inOptions) inOptions.classList.remove('selected');
+      renderSelectedTags();
+    });
+
+    // Create story -> GitHub Issue
+    storyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = $('#title').value.trim();
+      const role = $('#role').value.trim();
+      const goal = $('#goal').value.trim();
+      const benefit = $('#benefit').value.trim();
+
+      if (!title) { alert('Title is required'); return; }
+      if (!role || !goal) { alert('Please provide at least the role and the goal.'); return; }
+
+      // Collect labels: selected tags + typed values
+      const typed = (labelsInput.value || '')
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+      const labelsSet = new Set([...selectedTags, ...typed, 'user-story']); // ensure default
+      const labels = Array.from(labelsSet);
+
+      const payload = {
+        title,
+        role,
+        goal,
+        benefit,
+        context: $('#context').value.trim(),
+        consent: $('#consent').value,
+        labels,
+        assignees: $('#assignees').value.trim()
+      };
+
+      try {
+        setStatus('Creating issue…');
+        const issue = await createIssue(payload);
+        setStatus('Issue created successfully.');
+        backdrop.style.display = 'none';
+
+        // Reset form
+        storyForm.reset();
+        // Reset tag UI
+        selectedTags = [];
+        tagSelected.innerHTML = '';
+        tagOptions.querySelectorAll('.chip.selected').forEach(c => c.classList.remove('selected'));
+
+        // Prepend newly created issue and open drawer
+        accumulated = [issue, ...accumulated];
+        renderIssues(accumulated);
+        openIssue(issue.number, { push: true });
+      } catch (err) {
+        alert('Failed to create issue: ' + err.message);
+        setStatus('');
+      }
+    });
+
+    // Drawer close button
+    detailCloseBtn.addEventListener('click', () => closeIssue());
+
+    // Routing
+    window.addEventListener('popstate', () => {
+      const params = new URLSearchParams(location.search);
+      const issue = params.get('issue');
+      if (issue){
+        openIssue(parseInt(issue,10), { push:false });
+      } else {
+        if (drawer.classList.contains('open')) closeIssue({pop:true});
+      }
+    });
+
     // ---------- Init ----------
-    (function init(){
+    (function init() {
       const saved = localStorage.getItem('GITHUB_TOKEN');
-      if (saved) tokenInput.value = '••••••••••••••••';
+      if (saved) tokenInput.value = '••••••••••••••••'; // visual hint only
       currentPage = 1;
       fetchIssues({append:false}).then(() => {
-        // If deep link present, open it
         const params = new URLSearchParams(location.search);
         const issue = params.get('issue');
         if (issue) openIssue(parseInt(issue,10), { push:false });
