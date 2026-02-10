@@ -1,179 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>User Story Library · DeiC Light</title>
+<meta charset="utf-8" />
+<title>User Story Library · DeiC</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <style>
-/* ---------------------------------------------------------
-   LIGHT DEIC THEME
---------------------------------------------------------- */
-:root{
-  --bg:#F7F9F7;
-  --card:#FFFFFF;
-  --border:#E2E8E4;
-  --text:#1A1F17;
-  --muted:#667075;
-  --lime:#BFD730;        /* DeiC green */
-  --lime-dark:#A0B120;
-  --teal:#16385D;
-  --radius:14px;
-  --shadow:0 4px 15px rgba(0,0,0,.08);
-  --shadow-hover:0 8px 24px rgba(0,0,0,.12);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:Inter,ui-sans-serif,system-ui;
-  background:var(--bg);color:var(--text);
-}
-a{color:var(--lime);text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem}
 
-/* ---------------------------------------------------------
+/* ============================================================
+   THEME VARIABLES — LIGHT + DARK
+============================================================ */
+:root {
+  --deic-green: #BFD730;
+  --deic-blue: #16385D;
+
+  --bg: #F7F9F7;
+  --card: #FFFFFF;
+  --border: #DDE5D7;
+
+  --text: #1B1F14;
+  --muted: #667085;
+
+  --radius: 14px;
+  --shadow: 0 4px 15px rgba(0,0,0,.08);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,.12);
+
+  --chip-bg: #EFF6D9;
+  --chip-selected-bg: var(--deic-green);
+  --chip-selected-text: #000;
+}
+
+.dark {
+  --bg: #0E1523;
+  --card: #151E2A;
+  --border: #2C3A4D;
+  --text: #E5EAF2;
+  --muted: #9AA4B6;
+  --chip-bg: #243044;
+  --chip-selected-bg: var(--deic-green);
+  --chip-selected-text: #000;
+}
+
+/* ============================================================
+   BASE
+============================================================ */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui;
+  background: var(--bg);
+  color: var(--text);
+  transition: background .25s, color .25s;
+}
+a { color: var(--deic-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ============================================================
    HEADER
---------------------------------------------------------- */
-header{
-  position:sticky;top:0;z-index:20;
-  background:rgba(255,255,255,.95);backdrop-filter:blur(12px);
-  border-bottom:3px solid var(--lime);
-  box-shadow:0 4px 14px rgba(0,0,0,.06);
+============================================================ */
+header {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 3px solid var(--deic-green);
+  box-shadow: var(--shadow);
 }
-.header-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1rem 0;flex-wrap:wrap;gap:1rem;
-}
-.brand{display:flex;align-items:center;gap:.75rem}
-.logo{
-  width:42px;height:42px;border-radius:12px;
-  background:conic-gradient(from 180deg,var(--lime),var(--teal),#000,var(--lime));
-  border:1px solid var(--border);box-shadow:var(--shadow);
-}
-h1{margin:0;font-size:1.6rem;font-weight:800}
-.tagline{margin:0;color:var(--muted)}
+.dark header { background: rgba(20,26,40,.85); }
 
-/* ---------------------------------------------------------
+.header-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 0; flex-wrap: wrap; gap: 1rem;
+}
+
+.brand { display: flex; align-items: center; gap: .75rem; }
+.logo {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: conic-gradient(from 180deg,var(--deic-green),var(--deic-blue),#000,var(--deic-green));
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+h1 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--deic-blue); }
+.dark h1 { color: var(--deic-green); }
+.tagline { margin: .2rem 0 0; color: var(--muted); max-width: 650px; }
+
+/* ============================================================
    BUTTONS
---------------------------------------------------------- */
-.btn{
-  padding:.65rem 1rem;border:none;border-radius:var(--radius);
-  font-weight:600;cursor:pointer;transition:.15s;
+============================================================ */
+.btn {
+  padding:.65rem 1rem; border-radius: var(--radius); border:none;
+  font-weight:600; cursor:pointer; transition:.15s;
 }
-.btn-primary{background:var(--lime);color:#000;box-shadow:var(--shadow)}
-.btn-primary:hover{background:var(--lime-dark)}
-.btn-secondary{background:var(--teal);color:#fff;box-shadow:var(--shadow)}
-.btn-secondary:hover{filter:brightness(1.05)}
+.btn-primary { background: var(--deic-green); color:#000; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-secondary { background: var(--deic-blue); color:white; }
+.btn-secondary:hover { filter: brightness(1.1); }
 
-/* ---------------------------------------------------------
-   FILTER PANEL
---------------------------------------------------------- */
-.filters{
-  background:#fff;border:1px solid var(--border);
-  margin-top:1rem;padding:1rem;
-  border-radius:var(--radius);box-shadow:var(--shadow);
-}
-.controls-row{
-  display:grid;gap:.75rem;
-  grid-template-columns:2fr 1fr 1fr 1fr 1fr;
-}
-@media(max-width:900px){.controls-row{grid-template-columns:1fr 1fr 1fr}}
-label{font-size:.85rem;color:var(--muted)}
-input,select{
-  width:100%;padding:.65rem;border-radius:var(--radius);
-  border:1px solid var(--border);background:#fff;color:var(--text);
+/* ============================================================
+   FILTERS + SORT + DARK MODE
+============================================================ */
+.filters {
+  margin-top: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-/* ---------------------------------------------------------
-   GRID / CARDS
---------------------------------------------------------- */
-main{padding:2rem 1.25rem 5rem}
-.grid{
-  display:grid;gap:1.25rem;
+.filter-top {
+  display:flex; gap:1rem; flex-wrap:wrap;
+  align-items:center; justify-content:space-between;
+}
+
+input, select {
+  padding:.65rem .75rem;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+}
+
+/* ============================================================
+   LABEL CHIPS (MULTI-SELECT)
+============================================================ */
+.chip-row {
+  margin-top:1rem;
+  display:flex; flex-wrap:wrap;
+  gap:.5rem;
+}
+.chip {
+  padding:.35rem .75rem;
+  font-size:.85rem;
+  background: var(--chip-bg);
+  border:1px solid var(--border);
+  border-radius:999px;
+  cursor:pointer;
+  transition: background .15s;
+}
+.chip.selected {
+  background: var(--chip-selected-bg);
+  color: var(--chip-selected-text);
+  border-color: var(--chip-selected-bg);
+}
+
+/* ============================================================
+   GRID OF USE CASES
+============================================================ */
+.grid {
+  margin-top:1.5rem;
+  display:grid;
+  gap:1.25rem;
   grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  margin-top:1.25rem;
-}
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:1.25rem;
-  box-shadow:var(--shadow);cursor:pointer;transition:.18s ease;
-}
-.card:hover{transform:translateY(-3px);border-color:var(--lime);box-shadow:var(--shadow-hover)}
-.card-title{font-size:1.06rem;font-weight:650;margin-bottom:.45rem}
-.meta{color:var(--muted);font-size:.82rem;margin-bottom:.5rem}
-.labels{display:flex;flex-wrap:wrap;gap:.35rem}
-.label{
-  padding:.2rem .55rem;background:#EEF6D9;
-  border:1px solid var(--border);border-radius:999px;
-  font-size:.75rem;color:#203018;
 }
 
-/* ---------------------------------------------------------
-   DRAWER (Preview)
---------------------------------------------------------- */
-#drawer-backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.3);
-  display:none;z-index:90;
+.card {
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.25rem;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:.2s ease;
 }
-#drawer{
-  position:fixed;left:50%;bottom:-90%;transform:translateX(-50%);
-  width:min(720px,94vw);background:#fff;
-  border-top:3px solid var(--lime);border-radius:24px 24px 0 0;
-  padding:1.5rem;box-shadow:0 16px 48px rgba(0,0,0,.2);
-  max-height:88vh;overflow-y:auto;z-index:100;
+.card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+
+.card-title { font-size:1.1rem; font-weight:700; margin-bottom:.5rem; }
+.meta { font-size:.85rem; color:var(--muted); margin-bottom:.6rem; }
+.labels { display:flex; flex-wrap:wrap; gap:.35rem; }
+.label {
+  background:#EFF6D9; padding:.2rem .55rem; border-radius:999px;
+  border:1px solid var(--border); font-size:.75rem; color:#1F2A14;
+}
+.dark .label { background:#243044; color:#E5EAF2; }
+
+/* ============================================================
+   PAGINATION
+============================================================ */
+.pagination {
+  margin:2rem 0; display:flex; gap:.5rem;
+  justify-content:center; align-items:center;
+}
+.page-btn {
+  padding:.5rem .9rem; border-radius:var(--radius);
+  background:var(--card); border:1px solid var(--border);
+  cursor:pointer;
+}
+.page-btn:hover { background:var(--chip-bg); }
+.page-info { font-size:.9rem; color:var(--muted); }
+
+/* ============================================================
+   DARK-MODE SWITCH
+============================================================ */
+.switch {
+  display:flex; align-items:center; gap:.4rem; cursor:pointer;
+}
+.switch input { cursor:pointer; }
+
+/* ============================================================
+   BOTTOM-SHEET PREVIEW
+============================================================ */
+#sheet-backdrop {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.3);
+  display:none;
+  z-index:90;
+}
+#sheet {
+  position:fixed;
+  left:0; right:0; bottom:-100%;
+  background:var(--card);
+  border-radius:24px 24px 0 0;
+  padding:1.5rem;
+  max-height:85vh;
+  overflow-y:auto;
+  box-shadow:0 -8px 25px rgba(0,0,0,.25);
+  z-index:100;
   transition:bottom .35s cubic-bezier(.25,.8,.25,1);
 }
-#drawer.open{bottom:0}
-.drawer-header{display:flex;justify-content:space-between;align-items:center}
-.drawer-title{font-size:1.25rem;font-weight:800}
-.drawer-section{margin:1.2rem 0}
-.drawer-close{
-  padding:.45rem .8rem;background:#fff;border:1px solid var(--border);
-  border-radius:var(--radius);cursor:pointer;
-}
-.drawer-close:hover{background:#F3F6E6}
+#sheet.open { bottom:0; }
 
-/* ---------------------------------------------------------
-   MODAL (New Story)
---------------------------------------------------------- */
-#modal-backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.3);
-  display:none;place-items:center;z-index:120;
+.sheet-header {
+  display:flex; justify-content:space-between; align-items:center;
 }
-#modal{
-  width:min(680px,92vw);background:#fff;padding:1.5rem;
-  border-radius:var(--radius);border:2px solid var(--lime);
-  box-shadow:0 16px 48px rgba(0,0,0,.2);
+.sheet-title { font-size:1.25rem; font-weight:800; }
+.sheet-close {
+  background:var(--card); border:1px solid var(--border);
+  padding:.45rem .8rem; border-radius:var(--radius);
+  cursor:pointer;
 }
-#modal h2{margin:0 0 .75rem}
-.modal-grid{display:grid;gap:1rem;grid-template-columns:1fr 1fr}
-.modal-grid .full{grid-column:1/-1}
-textarea{
-  width:100%;min-height:120px;resize:vertical;
-  border-radius:var(--radius);border:1px solid var(--border);
-  padding:.75rem;
-}
-.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
-.chip{
-  padding:.35rem .7rem;background:#EEF6D9;border:1px solid var(--border);
-  border-radius:999px;font-size:.78rem;cursor:pointer;
-}
-.chip.selected{background:var(--lime);color:#000;border-color:var(--lime-dark)}
 
-/* Footer */
-footer{text-align:center;color:var(--muted);padding:2rem 0}
-
-/* Print */
-@media print{
-  header,.filters,#drawer,#modal-backdrop,#drawer-backdrop,footer{display:none!important}
-  body{background:#fff}
-}
 </style>
 </head>
 <body>
 
-<!-- ---------------------------------------------------------
+<!-- ============================================================
      HEADER
---------------------------------------------------------- -->
+============================================================ -->
 <header>
   <div class="wrap">
     <div class="header-row">
@@ -181,158 +243,82 @@ footer{text-align:center;color:var(--muted);padding:2rem 0}
         <div class="logo"></div>
         <div>
           <h1>User Story Library</h1>
-          <p class="tagline">GitHub-backed FAIR use case browser</p>
+          <p class="tagline">FAIR use cases integrated with GitHub Issues</p>
         </div>
       </div>
+
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <button id="openNew" class="btn btn-primary">New Story</button>
-        <button id="exportCsv" class="btn btn-secondary">Export CSV</button>
+        <button id="exportCsv" class="btn btn-secondary">CSV</button>
         <button id="printPdf" class="btn btn-secondary">Print / PDF</button>
+
+        <!-- DARK MODE -->
+        <label class="switch">
+          <input id="darkToggle" type="checkbox">
+          <span>🌙</span>
+        </label>
       </div>
     </div>
 
-    <!-- Filters -->
+    <!-- FILTERS -->
     <div class="filters">
-      <div class="controls-row">
-        <div>
-          <label>Search</label>
-          <input id="search" placeholder="Search title, description, #number…"/>
-        </div>
 
-        <div>
-          <label>Consent</label>
-          <select id="filterConsent">
-            <option value="">All</option>
-            <option value="Contact consent>YES">YES</option>
-            <option value="Contact consent>NO">NO</option>
-          </select>
-        </div>
+      <div class="filter-top">
+        <input id="search" placeholder="Search…"/>
 
-        <div>
-          <label>Domain</label>
-          <select id="filterDomain">
-            <option value="">All</option>
-            <option value="Domain>Agricultural Sciences">Agricultural Sciences</option>
-            <option value="Domain>Domain agnostic">Domain agnostic</option>
-            <option value="Domain>Engineering and Technology">Engineering & Technology</option>
-            <option value="Domain>Humanities">Humanities</option>
-            <option value="Domain>Medical and Health Sciences">Medical & Health Sciences</option>
-            <option value="Domain>Natural Sciences">Natural Sciences</option>
-            <option value="Domain>Social Sciences">Social Sciences</option>
-          </select>
-        </div>
+        <select id="sort">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
 
-        <div>
-          <label>Institution</label>
-          <select id="filterInstitution">
-            <option value="">All</option>
-            <option value="Institution>Aalborg University">Aalborg University</option>
-            <option value="Institution>Aarhus University">Aarhus University</option>
-            <option value="Institution>Copenhagen Business School (CBS)">CBS</option>
-            <option value="Institution>IT University of Copenhagen">ITU</option>
-            <option value="Institution>Roskilde University">RUC</option>
-            <option value="Institution>Technical University of Denmark (DTU)">DTU</option>
-            <option value="Institution>University of Copenhagen">KU</option>
-            <option value="Institution>University of Southern Denmark (SDU)">SDU</option>
-          </select>
-        </div>
-
-        <div>
-          <label>&nbsp;</label>
-          <button id="refresh" class="btn btn-primary" style="width:100%">Refresh</button>
-        </div>
+        <button id="refresh" class="btn btn-primary">Refresh</button>
       </div>
 
-      <div id="status" style="margin-top:.4rem;font-size:.85rem;color:var(--muted)"></div>
+      <!-- LABEL CHIPS (ALL 17) -->
+      <div id="chipRow" class="chip-row"></div>
     </div>
+
   </div>
 </header>
 
-<!-- ---------------------------------------------------------
-     MAIN LIST
---------------------------------------------------------- -->
-<main>
-  <div class="wrap">
-    <section id="storyGrid" class="grid"></section>
-    <div id="empty" style="display:none;color:var(--muted);text-align:center;padding:2rem 0">
-      No user stories found.
-    </div>
-    <div style="text-align:center;margin-top:1rem">
-      <button id="loadMore" class="btn btn-secondary" style="display:none">Load more</button>
-    </div>
+<!-- ============================================================
+     USE CASE GRID
+============================================================ -->
+<div class="wrap">
+  <section id="storyGrid" class="grid"></section>
+
+  <div id="empty" style="display:none;color:var(--muted);text-align:center;padding:2rem">
+    No user stories found.
   </div>
-</main>
 
-<footer>
-  <div class="wrap"><small>Powered by GitHub Issues · DeiC UI</small></div>
-</footer>
-
-<!-- ---------------------------------------------------------
-     DRAWER PREVIEW
---------------------------------------------------------- -->
-<div id="drawer-backdrop"></div>
-<div id="drawer">
-  <div class="drawer-header">
-    <h3 id="drawerTitle" class="drawer-title">Loading…</h3>
-    <button id="drawerClose" class="drawer-close">Close</button>
-  </div>
-  <div id="drawerContent"></div>
-</div>
-
-<!-- ---------------------------------------------------------
-     NEW STORY MODAL
---------------------------------------------------------- -->
-<div id="modal-backdrop">
-  <div id="modal">
-    <h2>New User Story</h2>
-    <form id="newStoryForm">
-      <div class="modal-grid">
-
-        <div class="full"><label>Title</label><input id="titleInput" required/></div>
-
-        <div><label>As a…</label><input id="roleInput"/></div>
-        <div><label>I want to…</label><input id="goalInput"/></div>
-
-        <div class="full"><label>…so that I can…</label><input id="benefitInput"/></div>
-
-        <div class="full"><label>Additional context</label><textarea id="contextInput"></textarea></div>
-
-        <div class="full"><label>Contact Consent</label>
-          <select id="consentInput">
-            <option value="N/A">N/A</option>
-            <option>YES</option>
-            <option>NO</option>
-          </select>
-        </div>
-
-        <div class="full"><label>Labels</label><div id="chips" class="chips"></div></div>
-
-        <div class="full"><label>Assignees</label><input id="assigneesInput" placeholder="comma-separated"/></div>
-      </div>
-
-      <div style="margin-top:1rem;text-align:right">
-        <button type="button" id="cancelModal" class="btn btn-secondary">Cancel</button>
-        <button class="btn btn-primary">Create</button>
-      </div>
-
-      <p style="margin-top:.6rem;font-size:.8rem;color:var(--muted)">
-        To create issues, set a GitHub token in DevTools:<br>
-        <code>localStorage.setItem('GITHUB_TOKEN','ghp_xxx')</code>
-      </p>
-    </form>
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <button id="prevPage" class="page-btn">Previous</button>
+    <span id="pageInfo" class="page-info"></span>
+    <button id="nextPage" class="page-btn">Next</button>
   </div>
 </div>
 
-<!-- ---------------------------------------------------------
-     SCRIPT
---------------------------------------------------------- -->
+<!-- ============================================================
+     BOTTOM SHEET PREVIEW
+============================================================ -->
+<div id="sheet-backdrop"></div>
+<div id="sheet">
+  <div class="sheet-header">
+    <h3 id="sheetTitle" class="sheet-title">Loading…</h3>
+    <button id="sheetClose" class="sheet-close">Close</button>
+  </div>
+  <div id="sheetContent"></div>
+</div>
+
 <script>
-/******** CONFIG ********/
+/* ============================================================
+   CONFIG
+============================================================ */
 const OWNER = "BrigitaPVoll";
 const REPO  = "User_Story_Library";
 const PER_PAGE = 20;
 
-/******** CONSTANT LABELS ********/
 const STATIC_LABELS = [
   "Contact consent>NO","Contact consent>YES",
   "Domain>Agricultural Sciences","Domain>Domain agnostic","Domain>Engineering and Technology",
@@ -344,250 +330,225 @@ const STATIC_LABELS = [
 ];
 
 const $ = s => document.querySelector(s);
-let page = 1;
+
 let issues = [];
-let hasNext = true;
+let filtered = [];
+let page = 1;
 
-/******** HELPERS ********/
-function authHeaders(){
-  const h = {"Accept":"application/vnd.github+json"};
-  const t = localStorage.getItem("GITHUB_TOKEN");
-  if (t) h["Authorization"] = "Bearer " + t;
-  return h;
+/* ============================================================
+   DARK MODE
+============================================================ */
+const toggleDark = $("#darkToggle");
+if(localStorage.getItem("darkMode")==="true"){
+  document.body.classList.add("dark");
+  toggleDark.checked = true;
 }
-function apiURL(path, params={}){
-  const u = new URL(`https://api.github.com/repos/${OWNER}/${REPO}/${path}`);
-  Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,String(v)));
-  return u.toString();
+toggleDark.onchange = ()=>{
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+};
+
+/* ============================================================
+   CHIP FILTER SETUP
+============================================================ */
+let activeChips = new Set();
+
+function renderChips(){
+  const row = $("#chipRow");
+  row.innerHTML = "";
+  STATIC_LABELS.forEach(label=>{
+    const chip = document.createElement("div");
+    chip.className="chip";
+    chip.textContent = label;
+    chip.onclick = ()=>{
+      if(activeChips.has(label)) activeChips.delete(label);
+      else activeChips.add(label);
+      chip.classList.toggle("selected");
+      applyFilters();
+    };
+    row.appendChild(chip);
+  });
 }
-function fmtDate(iso){ return iso ? new Date(iso).toLocaleString() : ""; }
-function esc(s){
-  return String(s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&.split("\n");
-  const storyLine = lines.find(l=>l.startsWith("As a"));
-  let role="",goal="",benefit="";
-  if (storyLine){
-    const m = storyLine.match(/As a (.*?), I want to (.*?), so that I can (.*)\.?/i);
-    if (m){ role=m[1]; goal=m[2]; benefit=m[3]; }
-  }
-  let ctx = "";
-  const ctxIdx = lines.findIndex(l=>l.toLowerCase().includes("additional context"));
-  if (ctxIdx >= 0) ctx = lines.slice(ctxIdx+1).join("\n").trim();
-  return { storyLine, role, goal, benefit, context:ctx };
+
+/* ============================================================
+   FETCH ISSUES
+============================================================ */
+async function loadIssues(){
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/issues?state=all&per_page=100`
+  );
+  const data = await res.json();
+  issues = data.filter(x=>!x.pull_request);
+  applyFilters();
 }
 
-/ LIST ********/
-function renderIssues(){
-  const q = ($("#search").value||"").toLowerCase().trim();
-  const fConsent = $("#filterConsent").value;
-  const fDomain  = $("#filterDomain").value;
-  const fInst    = $("#filterInstitution").value;
+/* ============================================================
+   FILTER + SORT + PAGINATE
+============================================================ */
+function applyFilters(){
+  const q = ($("#search").value||"").toLowerCase();
+  const sort = $("#sort").value;
 
-  const filtered = issues.filter(it=>{
-    const labels = (it.labels||[]).map(l=>l.name);
+  filtered = issues.filter(it=>{
+    // Text search
+    const hay = `${it.title} ${it.body}`.toLowerCase();
+    if(q && !hay.includes(q)) return false;
 
-    if (q){
-      const hay = `${it.title} ${it.body} ${it.number}`.toLowerCase();
-      if (!hay.includes(q)) return false;
+    // Chips filter
+    if(activeChips.size>0){
+      const names = (it.labels||[]).map(l=>l.name);
+      for(const chip of activeChips){
+        if(!names.includes(chip)) return false;
+      }
     }
-    if (fConsent && !labels.includes(fConsent)) return false;
-    if (fDomain  && !labels.includes(fDomain)) return false;
-    if (fInst    && !labels.includes(fInst)) return false;
     return true;
   });
 
-  const grid = $("#storyGrid");
-  grid.innerHTML = "";
-  $("#empty").style.display = filtered.length ? "none" : "block";
+  // Sorting
+  filtered.sort((a,b)=>{
+    if(sort==="newest") return new Date(b.created_at)-new Date(a.created_at);
+    return new Date(a.created_at)-new Date(b.created_at);
+  });
 
-  filtered.forEach(it=>{
-    const labelsHTML = (it.labels||[]).map(l=>`<span class="label">${esc(l.name)}</span>`).join("");
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="card-title">${esc(it.title)}</div>
-      <div class="meta">#${it.number} • ${esc(it.state)} • ${fmtDate(it.updated_at)}</div>
+  // Reset to page 1
+  page = 1;
+  renderPage();
+}
+
+function renderPage(){
+  const grid = $("#storyGrid");
+  grid.innerHTML="";
+
+  const start = (page-1)*PER_PAGE;
+  const end = start + PER_PAGE;
+  const slice = filtered.slice(start,end);
+
+  if(slice.length===0){
+    $("#empty").style.display="block";
+    $("#pageInfo").textContent = "";
+    return;
+  }
+
+  $("#empty").style.display="none";
+
+  slice.forEach(it=>{
+    const card = document.createElement("div");
+    card.className="card";
+
+    const labelsHTML = (it.labels||[])
+      .map(l=>`<span class="label">${l.name}</span>`).join("");
+
+    card.innerHTML=`
+      <div class="card-title">${it.title}</div>
+      <div class="meta">#${it.number} · ${it.state} · ${new Date(it.updated_at).toLocaleString()}</div>
       <div class="labels">${labelsHTML}</div>
     `;
-    card.addEventListener("click", ()=>openDrawer(it.number));
+
+    card.onclick = ()=>openSheet(it.number);
     grid.appendChild(card);
   });
 
-  $("#status").textContent = `${filtered.length} visible · ${issues.length} loaded`;
+  $("#pageInfo").textContent =
+    `Page ${page} of ${Math.ceil(filtered.length/PER_PAGE)}`;
+
+  $("#prevPage").disabled = (page===1);
+  $("#nextPage").disabled = (page*PER_PAGE >= filtered.length);
 }
 
-/******** FETCH ISSUES (ALWAYS ALL) ********/
-async function fetchIssues({reset=false}={}){
-  if (reset){ page = 1; issues = []; $("#storyGrid").innerHTML=""; }
-  const url = apiURL("issues", {state:"all", per_page:PER_PAGE, page});
-  try{
-    $("#status").textContent = "Loading…";
-    const res = await fetch(url, {headers:authHeaders()});
-    if (!res.ok){ $("#status").textContent = "GitHub error "+res.status; return; }
+/* ============================================================
+   PAGINATION BUTTONS
+============================================================ */
+$("#prevPage").onclick = ()=>{
+  if(page>1){ page--; renderPage(); }
+};
+$("#nextPage").onclick = ()=>{
+  if(page*PER_PAGE < filtered.length){ page++; renderPage(); }
+};
 
-    const link = res.headers.get("link") || "";
-    hasNext = /rel="next"/i.test(link);
+/* ============================================================
+   BOTTOM SHEET PREVIEW
+============================================================ */
+async function openSheet(num){
+  $("#sheet-backdrop").style.display="block";
+  $("#sheet").classList.add("open");
 
-    const data = await res.json();
-    const only = data.filter(x=>!x.pull_request);
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/issues/${num}`
+  );
+  const it = await res.json();
 
-    issues = issues.concat(only);
-    renderIssues();
+  $("#sheetTitle").textContent = it.title;
 
-    $("#loadMore").style.display = hasNext ? "" : "none";
-  } catch (e){
-    $("#status").textContent = "Failed to fetch issues.";
-  }
+  const labelsHTML = (it.labels||[])
+    .map(l=>`<span class="label">${l.name}</span>`).join("");
+
+  $("#sheetContent").innerHTML = `
+    <div><strong>ID:</strong> #${it.number}</div>
+    <div><strong>Status:</strong> ${it.state}</div>
+    <div><strong>Updated:</strong> ${new Date(it.updated_at).toLocaleString()}</div>
+
+    <hr style="margin:1rem 0">
+
+    <pre style="white-space:pre-wrap;background:#FAFAF7;padding:1rem;border-radius:var(--radius);border:1px solid var(--border);">
+${it.body||""}
+    </pre>
+
+    <div style="margin-top:1.2rem">
+      <strong>Labels:</strong><br>${labelsHTML}
+    </div>
+
+    <div style="margin-top:1.2rem">
+      <a href="${it.html_url}" target="_blank">Open on GitHub ↗</a>
+    </div>
+  `;
+}
+function closeSheet(){
+  $("#sheet-backdrop").style.display="none";
+  $("#sheet").classList.remove("open");
 }
 
-/******** DRAWER PREVIEW ********/
-async function openDrawer(num){
-  $("#drawer-backdrop").style.display="block";
-  $("#drawer").classList.add("open");
-  $("#drawerTitle").textContent = `#${num} — Loading…`;
-  $("#drawerContent").innerHTML = "";
+$("#sheet-backdrop").onclick = closeSheet;
+$("#sheetClose").onclick = closeSheet;
 
-  try{
-    const res = await fetch(apiURL(`issues/${num}`), {headers:authHeaders()});
-    const issue = await res.json();
-
-    const parsed = parseStory(issue.body);
-    const labelsHTML = (issue.labels||[]).map(l=>`<span class="label">${esc(l.name)}</span>`).join("");
-
-    $("#drawerTitle").textContent = esc(issue.title);
-    $("#drawerContent").innerHTML = `
-      <div class="drawer-section"><strong>#${issue.number}</strong> • ${esc(issue.state||'')} • ${fmtDate(issue.updated_at)}</div>
-
-      ${parsed.storyLine ? `
-      <div class="drawer-section">
-        <h3>User Story</h3>
-        <p><strong>As a:</strong> ${esc(parsed.role||'')}<br>
-        <strong>I want to:</strong> ${esc(parsed.goal||'')}<br>
-        <strong>So I can:</strong> ${esc(parsed.benefit||'')}</p>
-      </div>` : ""}
-
-      ${parsed.context ? `
-      <div class="drawer-section">
-        <h3>Additional Context</h3>
-        <pre style="white-space:pre-wrap;background:#fff;padding:.75rem;border:1px solid var(--border);border-radius:var(--radius);">${esc(parsed.context)}</pre>
-      </div>` : ""}
-
-      <div class="drawer-section"><h3>Labels</h3>${labelsHTML}</div>
-
-      <div class="drawer-section"><a href="${esc(issue.html_url)}" target="_blank">Open in GitHub ↗</a></div>
-    `;
-  } catch (e){
-    $("#drawerContent").innerHTML = "<p style='color:red'>Failed to load issue.</p>";
-  }
-}
-function closeDrawer(){
-  $("#drawer-backdrop").style.display="none";
-  $("#drawer").classList.remove("open");
-}
-
-/******** CREATE ISSUE (Requires token in localStorage) ********/
-async function createIssue(){
-  const token = localStorage.getItem("GITHUB_TOKEN");
-  if (!token){ alert("Set token in DevTools first:\nlocalStorage.setItem('GITHUB_TOKEN','ghp_xxx')"); return; }
-
-  const title = $("#titleInput").value.trim();
-  const role  = $("#roleInput").value.trim();
-  const goal  = $("#goalInput").value.trim();
-  const ben   = $("#benefitInput").value.trim();
-  const ctx   = $("#contextInput").value.trim();
-  const con   = $("#consentInput").value;
-
-  if (!title){ alert("Title required."); return; }
-
-  const storyLine = (role||goal||ben)
-    ? `As a ${role||'____'}, I want to ${goal||'____'}, so that I can ${ben||'____'}.`
-    : "";
-
-  const body = [
-    "User Story","",
-    storyLine,"",
-    "Additional context:",
-    ctx,"",
-    "Contact consent:",
-    con
-  ].join("\n");
-
-  const labels = [
-    ...Array.from(document.querySelectorAll(".chip.selected")).map(el=>el.textContent.trim()),
-    "user-story"
-  ];
-
-  const assignees = $("#assigneesInput").value
-    .split(",").map(x=>x.trim()).filter(Boolean);
-
-  const res = await fetch(apiURL("issues"), {
-    method:"POST",
-    headers:{
-      "Accept":"application/vnd.github+json",
-      "Authorization":"Bearer " + token,
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({title,body,labels,assignees})
-  });
-
-  if (!res.ok){ alert("Fail: "+await res.text()); return; }
-
-  alert("Story created!");
-  $("#modal-backdrop").style.display="none";
-  fetchIssues({reset:true});
-}
-
-/******** CSV ********/
-function exportCSV(){
-  const rows=[["number","title","state","updated","labels","url","body"]];
+/* ============================================================
+   CSV + PRINT
+============================================================ */
+$("#exportCsv").onclick = ()=>{
+  let rows = [["number","title","state","updated","labels","body"]];
   issues.forEach(i=>{
-    const labels = (i.labels||[]).map(l=>l.name).join("|").replace(/"/g,'""');
-    const body = (i.body||"").replace(/"/g,'""');
+    const labels = (i.labels||[]).map(l=>l.name).join("|");
     rows.push([
       i.number,
-      (i.title||"").replace(/"/g,'""'),
-      i.state||"",
-      i.updated_at||"",
-      labels,
-      i.html_url||"",
-      body
-    ].map(v=>/[,\"\n]/.test(v)?`"${v}"`:v).join(","));
+      i.title.replace(/"/g,'""'),
+      i.state,
+      i.updated_at,
+      labels.replace(/"/g,'""'),
+      (i.body||"").replace(/"/g,'""')
+    ].map(v=>`"${v}"`).join(","));
   });
-  const blob = new Blob([rows.join("\n")], {type:"text/csv"});
+
+  const blob = new Blob([rows.join("\n")],{type:'text/csv'});
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "user_stories.csv";
+  a.href=URL.createObjectURL(blob);
+  a.download="stories.csv";
   a.click();
-}
+};
 
-/******** BIND EVENTS ********/
-function bindEvents(){
-  $("#refresh").onclick = ()=>fetchIssues({reset:true});
-  $("#search").oninput = ()=>renderIssues();
-  $("#filterConsent").onchange = ()=>renderIssues();
-  $("#filterDomain").onchange = ()=>renderIssues();
-  $("#filterInstitution").onchange = ()=>renderIssues();
-  $("#loadMore").onclick = ()=>{ if (hasNext){ page++; fetchIssues(); } };
+$("#printPdf").onclick = ()=>window.print();
 
-  $("#drawerClose").onclick = closeDrawer;
-  $("#drawer-backdrop").onclick = closeDrawer;
+/* ============================================================
+   EVENTS
+============================================================ */
+$("#search").oninput = applyFilters;
+$("#sort").onchange = applyFilters;
+$("#refresh").onclick = ()=>loadIssues();
 
-  $("#openNew").onclick = ()=>{ initChips(); $("#modal-backdrop").style.display="grid"; };
-  $("#cancelModal").onclick = ()=> $("#modal-backdrop").style.display="none";
+/* ============================================================
+   INIT
+============================================================ */
+renderChips();
+loadIssues();
 
-  $("#newStoryForm").onsubmit = e=>{
-    e.preventDefault();
-    createIssue();
-  };
-
-  $("#exportCsv").onclick = exportCSV;
-  $("#printPdf").onclick = ()=>window.print();
-}
-
-/******** INIT ********/
-(function init(){
-  bindEvents();
-  fetchIssues({reset:true});   // ALWAYS load ALL issues
-})();
 </script>
 </body>
 </html>
