@@ -36,8 +36,24 @@
       --shadow: 0 6px 18px rgba(0,0,0,.08);
     }
 
+    /* Dark mode - manual toggle or system preference */
+    html.dark-mode{
+      --bg: #0e1523;
+      --fg: #eef2f7;
+      --muted: #aeb9c7;
+      --card: #121a28;
+      --border: #243045;
+      --accent-contrast: #0e1523;
+      --header-bg: #0f1b2b;
+      --header-border: #33527a;
+      --control-bg: #0f1726;
+      --control-border: #243045;
+      --control-shadow: 0 6px 16px rgba(0,0,0,.25);
+      --link: #8bb3e8;
+    }
+
     @media (prefers-color-scheme: dark){
-      :root{
+      html:not(.light-mode){
         --bg: #0e1523;
         --fg: #eef2f7;
         --muted: #aeb9c7;
@@ -52,6 +68,7 @@
         --link: #8bb3e8;
       }
     }
+
 
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -96,6 +113,23 @@
     .button-link:hover{filter:brightness(1.05)}
     .secondary{ background: var(--control-bg); color: var(--fg); border-color: var(--control-border) }
 
+    /* ==== Dark mode toggle ==== */
+    .theme-toggle{
+      background: var(--control-bg); color: var(--fg); border:1px solid var(--control-border);
+      padding:.5rem .7rem; border-radius:.6rem; cursor:pointer; font-size:1rem;
+      display:inline-flex; align-items:center; gap:.4rem; transition:all 0.2s ease;
+      box-shadow: var(--control-shadow);
+    }
+    .theme-toggle:hover{background:var(--accent-soft); border-color:var(--accent);}
+    
+    /* ==== Dark mode toggle ==== */
+    .theme-toggle{
+      background: var(--control-bg); color: var(--fg); border:1px solid var(--control-border);
+      padding:.5rem .7rem; border-radius:.6rem; cursor:pointer; font-size:1rem;
+      display:inline-flex; align-items:center; gap:.4rem; transition:all 0.2s ease;
+    }
+    .theme-toggle:hover{background:var(--accent-soft); border-color:var(--accent);}
+
     /* ==== Controls: crisp white surface ==== */
     .controls{display:grid; grid-template-columns:1fr; gap:.75rem; margin-top:.75rem; background: color-mix(in oklab, var(--control-bg) 94%, transparent); border: 1px solid var(--control-border); border-radius: 12px; padding: .8rem; box-shadow: var(--control-shadow);}
     .controls-row{display:grid; grid-template-columns:2fr 1fr 1fr auto auto; gap:.5rem}
@@ -123,8 +157,9 @@
     .card{
       background: var(--card);
       border:1px solid var(--border); border-radius:14px; padding:1rem; box-shadow:var(--shadow);
-      display:flex; flex-direction:column; gap:.6rem
+      display:flex; flex-direction:column; gap:.6rem; transition:transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .card:hover{transform:translateY(-4px); box-shadow:0 12px 24px rgba(0,0,0,.15);}
     .card h3{margin:.1rem 0 .25rem; font-size:1.05rem; line-height:1.35}
     .meta{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:.85rem}
     .labels{display:flex; gap:.35rem; flex-wrap:wrap}
@@ -183,10 +218,39 @@
     }
     .assignee-badge button:hover{color:var(--deic-blue)}
 
+    /* ==== Label filters ==== */
+    .filter-group{margin-top:1rem; border-top:1px solid var(--control-border); padding-top:0.75rem;}
+    .filter-group h4{margin:.5rem 0 .5rem; font-size:.9rem; color:var(--fg); font-weight:600;}
+    .filter-options{display:flex; flex-wrap:wrap; gap:.5rem;}
+    .filter-checkbox{display:flex; align-items:center; gap:.35rem; font-size:.85rem;}
+    .filter-checkbox input{width:auto; margin:0;}
+    .filter-checkbox label{margin:0; cursor:pointer; user-select:none;}
+
+    /* ==== Preview drawer (slides up from bottom) ==== */
+    .preview-overlay{position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; z-index:100; transition:opacity 0.3s ease;}
+    .preview-overlay.show{display:block; opacity:1;}
+    .preview-drawer{position:fixed; bottom:0; left:0; right:0; max-height:90vh; background:var(--control-bg); color:var(--fg); border-top:1px solid var(--control-border); box-shadow:0 -4px 20px rgba(0,0,0,.2); display:none; flex-direction:column; z-index:101; transform:translateY(100%); transition:transform 0.4s ease;}
+    .preview-drawer.show{display:flex; transform:translateY(0);}
+    .preview-drawer header{border-bottom:1px solid var(--control-border); padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;}
+    .preview-drawer h2{margin:0; font-size:1.3rem; color:var(--deic-blue);}
+    .preview-drawer .close-btn{background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); padding:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center;}
+    .preview-drawer .close-btn:hover{color:var(--fg);}
+    .preview-drawer .content{flex:1; overflow-y:auto; padding:1rem 1.25rem;}
+    .preview-section{margin-bottom:1.5rem;}
+    .preview-section h3{margin:0 0 .5rem; font-size:.95rem; color:var(--deic-blue); font-weight:600; text-transform:uppercase; font-size:.75rem; letter-spacing:0.5px;}
+    .preview-section p{margin:0; line-height:1.6; white-space:pre-wrap;}
+    .preview-meta{display:flex; flex-wrap:wrap; gap:1rem; margin:1rem 0;}
+    .preview-meta-item{display:flex; flex-direction:column; gap:.35rem;}
+    .preview-meta-label{font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;}
+    .preview-meta-value{font-size:.9rem; color:var(--fg);}
+    .preview-footer{border-top:1px solid var(--control-border); padding:1rem 1.25rem; display:flex; gap:.5rem;}
+    .preview-footer a{display:inline-flex; align-items:center; gap:.35rem; padding:.5rem .75rem; background:var(--accent); color:var(--accent-contrast); border-radius:.6rem; text-decoration:none; font-weight:600; cursor:pointer;}
+    .preview-footer a:hover{filter:brightness(1.05);}
+
     /* ==== Print-friendly styling (for "Save as PDF") ==== */
     @page { size: A4; margin: 16mm; }
     @media print {
-      header, .controls, .status, .load-more, footer, .modal-backdrop { display: none !important; }
+      header, .controls, .status, .load-more, footer, .modal-backdrop, .preview-overlay, .preview-drawer { display: none !important; }
       body { background: #fff; }
       main { padding: 0 }
       .grid { grid-template-columns: 1fr; gap: .8rem; }
@@ -207,6 +271,7 @@
           </div>
         </div>
         <div class="cta-row">
+          <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
           <button id="open-modal" class="button-link">New Story</button>
           <button id="export" class="button-link secondary">Export CSV</button>
           <button id="print" class="button-link secondary">Print / Save PDF</button>
@@ -249,6 +314,96 @@
             Stored locally in your browser (localStorage) to raise API limits and enable issue creation.
             Docs: <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">PATs</a>,
             <a href="https://stackoverflow.com/questions/63906613/minimal-set-of-scopes-to-push-to-github-using-an-access-token" target="_blank" rel="noopener">scopes</a>
+          </div>
+        </div>
+
+        <div id="label-filters" class="filter-group">
+          <h4>Filter by Labels</h4>
+          
+          <div>
+            <strong style="font-size:.9rem;">Contact Consent</strong>
+            <div class="filter-options">
+              <div class="filter-checkbox">
+                <input type="checkbox" id="filter-consent-yes" value="Contact consent>YES" />
+                <label for="filter-consent-yes">YES</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" id="filter-consent-no" value="Contact consent>NO" />
+                <label for="filter-consent-no">NO</label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:.75rem;">
+            <strong style="font-size:.9rem;">Domain</strong>
+            <div class="filter-options">
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Agricultural Sciences" />
+                <label>Agricultural Sciences</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Domain agnostic" />
+                <label>Domain agnostic</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Engineering and Technology" />
+                <label>Engineering and Technology</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Humanities" />
+                <label>Humanities</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Medical and Health Sciences" />
+                <label>Medical and Health Sciences</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Natural Sciences" />
+                <label>Natural Sciences</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Domain>Social Sciences" />
+                <label>Social Sciences</label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:.75rem;">
+            <strong style="font-size:.9rem;">Institution</strong>
+            <div class="filter-options">
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>Aalborg University" />
+                <label>Aalborg University</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>Aarhus University" />
+                <label>Aarhus University</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>Copenhagen Business School (CBS)" />
+                <label>Copenhagen Business School (CBS)</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>IT University of Copenhagen" />
+                <label>IT University of Copenhagen</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>Roskilde University" />
+                <label>Roskilde University</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>Technical University of Denmark (DTU)" />
+                <label>Technical University of Denmark (DTU)</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>University of Copenhagen" />
+                <label>University of Copenhagen</label>
+              </div>
+              <div class="filter-checkbox">
+                <input type="checkbox" value="Institution>University of Southern Denmark (SDU)" />
+                <label>University of Southern Denmark (SDU)</label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -349,6 +504,65 @@
     </div>
   </div>
 
+  <!-- ==== Preview Drawer: Story Details (slides up from bottom) ==== -->
+  <div id="preview-overlay" class="preview-overlay"></div>
+  <div id="preview-drawer" class="preview-drawer">
+    <header>
+      <div>
+        <h2 id="preview-title"></h2>
+      </div>
+      <button id="preview-close-btn" class="close-btn">✕</button>
+    </header>
+    <div class="content">
+      <div class="preview-section">
+        <p id="preview-story-line" style="font-size:1rem; line-height:1.6;"></p>
+      </div>
+      
+      <div id="preview-role-goal-benefit" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+      </div>
+
+      <div id="preview-context-section" class="preview-section" style="display:none;">
+        <h3>Additional Context</h3>
+        <p id="preview-context"></p>
+      </div>
+
+      <div class="preview-section">
+        <h3>Metadata</h3>
+        <div class="preview-meta">
+          <div class="preview-meta-item">
+            <div class="preview-meta-label">Issue #</div>
+            <div class="preview-meta-value" id="preview-number"></div>
+          </div>
+          <div class="preview-meta-item">
+            <div class="preview-meta-label">State</div>
+            <div class="preview-meta-value" id="preview-state"></div>
+          </div>
+          <div class="preview-meta-item">
+            <div class="preview-meta-label">Contact Consent</div>
+            <div class="preview-meta-value" id="preview-consent"></div>
+          </div>
+          <div class="preview-meta-item">
+            <div class="preview-meta-label">Updated</div>
+            <div class="preview-meta-value" id="preview-updated"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <h3>Labels</h3>
+        <div id="preview-labels" class="labels" style="margin-top:.5rem;"></div>
+      </div>
+
+      <div id="preview-assignees-section" class="preview-section" style="display:none;">
+        <h3>Assignees</h3>
+        <div id="preview-assignees" class="assignees" style="margin-top:.5rem;"></div>
+      </div>
+    </div>
+    <div class="preview-footer">
+      <a id="preview-github-link" target="_blank" rel="noopener">→ View on GitHub</a>
+    </div>
+  </div>
+
   <script>
     // ---------- Configuration ----------
     const OWNER = 'BrigitaPVoll';
@@ -361,6 +575,7 @@
     let accumulated = [];
     let selectedAssignees = [];
     let availableUsers = [];
+    let selectedLabels = [];  // State for selected label filters
 
     // ---------- DOM ----------
     const $ = sel => document.querySelector(sel);
@@ -382,6 +597,12 @@
     const assigneesInput = $('#assignees-input');
     const assigneesDropdown = $('#assignees-dropdown');
     const selectedAssigneesEl = $('#selected-assignees');
+
+    const previewOverlay = $('#preview-overlay');
+    const previewDrawer = $('#preview-drawer');
+    const previewCloseBtn = $('#preview-close-btn');
+
+    const themeToggleBtn = $('#theme-toggle');
 
     // ---------- Utilities ----------
     function escapeHTML(str){
@@ -573,6 +794,84 @@
       });
     }
 
+    // ---------- Preview drawer functions ----------
+    function openPreview(issue) {
+      const parsed = parseStory(issue.body);
+      const labels = (issue.labels||[]).map(l=>l.name).sort();
+      const assignees = (issue.assignees||[]);
+      const updated = issue.updated_at ? fmtDate(issue.updated_at) : 'N/A';
+      const title = (issue.title && issue.title.trim()) || parsed.storyLine || `(issue #${issue.number})`;
+
+      // Set header
+      $('#preview-title').textContent = escapeHTML(title);
+
+      // Set story line
+      const storyEl = $('#preview-story-line');
+      if (parsed.storyLine) {
+        storyEl.textContent = escapeHTML(parsed.storyLine);
+      } else {
+        storyEl.textContent = '(No story line provided)';
+      }
+
+      // Set role, goal, benefit grid
+      const rgbEl = $('#preview-role-goal-benefit');
+      const roleGoalBenefit = [
+        { label: 'Role', value: parsed.role },
+        { label: 'Goal', value: parsed.goal },
+        { label: 'Benefit', value: parsed.benefit }
+      ];
+      rgbEl.innerHTML = roleGoalBenefit.map(item => `
+        <div class="preview-section">
+          <h3>${escapeHTML(item.label)}</h3>
+          <p>${item.value ? escapeHTML(item.value) : '(not provided)'}</p>
+        </div>
+      `).join('');
+
+      // Set context
+      const ctxSection = $('#preview-context-section');
+      const ctxEl = $('#preview-context');
+      if (parsed.context) {
+        ctxEl.textContent = escapeHTML(parsed.context);
+        ctxSection.style.display = 'block';
+      } else {
+        ctxSection.style.display = 'none';
+      }
+
+      // Set metadata
+      $('#preview-number').textContent = `#${issue.number}`;
+      $('#preview-state').textContent = escapeHTML(issue.state || 'N/A');
+      $('#preview-consent').textContent = escapeHTML(parsed.consent || 'N/A');
+      $('#preview-updated').textContent = updated;
+
+      // Set labels
+      const labelsEl = $('#preview-labels');
+      labelsEl.innerHTML = labels.length > 0 
+        ? labels.map(name => `<span class="label">${escapeHTML(name)}</span>`).join('')
+        : '<span style="color:var(--muted); font-size:.85rem;">None</span>';
+
+      // Set assignees
+      const assigneesSection = $('#preview-assignees-section');
+      const assigneesEl = $('#preview-assignees');
+      if (assignees.length > 0) {
+        assigneesEl.innerHTML = assignees.map(a=>`<img src="${a.avatar_url}" alt="${escapeHTML(a.login)}" title="${escapeHTML(a.login)}" />`).join('');
+        assigneesSection.style.display = 'block';
+      } else {
+        assigneesSection.style.display = 'none';
+      }
+
+      // Set GitHub link
+      $('#preview-github-link').href = issue.html_url;
+
+      // Show the drawer
+      previewOverlay.classList.add('show');
+      previewDrawer.classList.add('show');
+    }
+
+    function closePreview() {
+      previewOverlay.classList.remove('show');
+      previewDrawer.classList.remove('show');
+    }
+
     // ---------- Create issue (New Story) ----------
     function buildIssueBody({role, goal, benefit, context, consent}) {
       const line = (role || goal || benefit)
@@ -635,6 +934,15 @@
         const parsed = parseStory(i.body);
         const hasStory = parsed.storyLine && /As a\b/i.test(parsed.storyLine);
         if (onlyTemplate && !hasStory) return false;
+
+        // Filter by selected labels
+        if (selectedLabels.length > 0) {
+          const issueLabels = (i.labels||[]).map(l=>l.name);
+          const hasAllSelectedLabels = selectedLabels.every(selectedLabel =>
+            issueLabels.includes(selectedLabel)
+          );
+          if (!hasAllSelectedLabels) return false;
+        }
 
         if (!q) return true;
         const hay = [
@@ -705,6 +1013,12 @@
             <a href="${i.html_url}" target="_blank" rel="noopener">→ Open in GitHub</a>
           </div>
         `;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+          if (e.target.tagName !== 'A') {
+            openPreview(i);
+          }
+        });
         storiesEl.appendChild(card);
       }
     }
@@ -761,6 +1075,20 @@
     $('#search').addEventListener('input', () => renderIssues(accumulated));
     $('#only-template').addEventListener('change', () => renderIssues(accumulated));
 
+    // Label filter event listeners
+    const labelFilterCheckboxes = document.querySelectorAll('#label-filters input[type="checkbox"]');
+    labelFilterCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        selectedLabels = [];
+        labelFilterCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            selectedLabels.push(cb.value);
+          }
+        });
+        renderIssues(accumulated);
+      });
+    });
+
     $('#toggle-token').addEventListener('click', () => {
       const isOpen = tokenBox.style.display !== 'none';
       tokenBox.style.display = isOpen ? 'none' : 'grid';
@@ -777,6 +1105,33 @@
       currentPage += 1;
       fetchIssues({append:true});
     });
+
+    // Preview drawer open/close
+    previewCloseBtn.addEventListener('click', closePreview);
+    previewOverlay.addEventListener('click', closePreview);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && previewDrawer.classList.contains('show')) {
+        closePreview();
+      }
+    });
+
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.classList.contains('dark-mode');
+      if (isDark) {
+        html.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+        themeToggleBtn.textContent = '🌙';
+        themeToggleBtn.title = 'Switch to dark mode';
+      } else {
+        html.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+        themeToggleBtn.textContent = '☀️';
+        themeToggleBtn.title = 'Switch to light mode';
+      }
+    }
+    themeToggleBtn.addEventListener('click', toggleTheme);
 
     // Modal open/close
     openModalBtn.addEventListener('click', () => { 
@@ -846,6 +1201,29 @@
 
     // ---------- Init ----------
     (function init(){
+      // Restore theme preference
+      const savedTheme = localStorage.getItem('theme');
+      const html = document.documentElement;
+      if (savedTheme === 'dark') {
+        html.classList.add('dark-mode');
+        themeToggleBtn.textContent = '☀️';
+        themeToggleBtn.title = 'Switch to light mode';
+      } else if (savedTheme === 'light') {
+        html.classList.remove('dark-mode');
+        themeToggleBtn.textContent = '🌙';
+        themeToggleBtn.title = 'Switch to dark mode';
+      } else {
+        // Auto-detect system preference
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          html.classList.add('dark-mode');
+          themeToggleBtn.textContent = '☀️';
+          themeToggleBtn.title = 'Switch to light mode';
+        } else {
+          themeToggleBtn.textContent = '🌙';
+          themeToggleBtn.title = 'Switch to dark mode';
+        }
+      }
+
       const saved = localStorage.getItem('GITHUB_TOKEN');
       if (saved) tokenInput.value = '••••••••••••••••';
       currentPage = 1;
