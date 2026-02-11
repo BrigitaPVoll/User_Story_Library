@@ -605,29 +605,23 @@
         assignees: assignees.map(a => a.login)
       };
 
-      const backendUrl = '/api/createStory';
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-
-      const res = await fetch(backendUrl, { 
-        method: 'POST', 
-        headers, 
-        body: JSON.stringify(body) 
-      });
+      // Call GitHub API directly
+      const res = await fetch(
+        `https://api.github.com/repos/BrigitaPVoll/User_Story_Library/issues`,
+        { 
+          method: 'POST', 
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body) 
+        }
+      );
 
       if (!res.ok) {
-        let errorMsg = `${res.status} ${res.statusText}`;
-        try {
-          const errorData = await res.json();
-          if (errorData.message) errorMsg = errorData.message;
-        } catch {}
-        
-        if(res.status === 401) throw new Error('401 Unauthorized — check your token');
-        if(res.status === 403) throw new Error('403 Forbidden or rate-limited — verify scopes or wait');
-        if(res.status === 410) throw new Error('410 Gone — issues disabled in this repository');
-        throw new Error(errorMsg);
+        const error = await res.json();
+        throw new Error(error.message || `${res.status} ${res.statusText}`);
       }
       return res.json();
     }
