@@ -297,8 +297,8 @@
             </div>
 
             <div class="full">
-              <label for="assignees">Assignees (comma GitHub usernames, optional)</label>
-              <input id="assignees" type="text" placeholder="e.g., BrigitaPVoll" />
+              <label for="assignees">Point of Contact (name or email, optional)</label>
+              <input id="assignees" type="text" placeholder="e.g., john.doe@example.com or John Doe" />
             </div>
           </div>
 
@@ -449,7 +449,7 @@
     }
 
     // ---------- Create issue (New Story) ----------
-    function buildIssueBody({role, goal, benefit, context, consent}) {
+    function buildIssueBody({role, goal, benefit, context, consent, pointOfContact}) {
       const line = (role || goal || benefit)
         ? `As a ${role || '_____'}, I want to ${goal || '______'}, so that I can ${benefit || '________'}.`
         : '';
@@ -463,12 +463,15 @@
         context || '',
         '',
         '**Can we contact you to participate in a future EOSC funded project on FAIR data management?**',
-        (consent || 'N/A')
+        (consent || 'N/A'),
+        '',
+        '**Point of Contact**',
+        (pointOfContact || '')
       ].join('\n');
     }
 
     async function createIssue({
-      title, role, goal, benefit, context, consent, labels, assignees
+      title, role, goal, benefit, context, consent, labels, pointOfContact
     }) {
       const token = localStorage.getItem('GITHUB_TOKEN') || tokenInput.value.trim();
       if (!token) throw new Error('Missing token. Set Token in the header.');
@@ -481,9 +484,8 @@
 
       const body = {
         title: title.trim(),
-        body: buildIssueBody({role, goal, benefit, context, consent}),
-        labels: (labels || 'user-story').split(',').map(s => s.trim()).filter(Boolean),
-        assignees: (assignees || '').split(',').map(s => s.trim()).filter(Boolean)
+        body: buildIssueBody({role, goal, benefit, context, consent, pointOfContact}),
+        labels: (labels || 'user-story').split(',').map(s => s.trim()).filter(Boolean)
       };
 
       const url = `https://api.github.com/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(REPO)}/issues`;
@@ -676,7 +678,7 @@
         context: $('#context').value.trim(),
         consent: $('#consent').value,
         labels: $('#labels').value.trim(),
-        assignees: $('#assignees').value.trim()
+        pointOfContact: $('#assignees').value.trim()
       };
 
       try {
