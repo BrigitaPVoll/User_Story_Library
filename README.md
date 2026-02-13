@@ -7,7 +7,7 @@ A guiding question in understanding what a FAIR user story is:
 “Could someone other than the original data creator realistically find, understand, and reuse this data in the future?”
 What allowed that to happen? 
 
-For more information about FAIR data, please visit www.deic.com
+For more information about FAIR data, please visit www.deic.dk 
 
 Would you like your user story presented here? Please fill out this (template) and request publication to xxx or xxx 
 
